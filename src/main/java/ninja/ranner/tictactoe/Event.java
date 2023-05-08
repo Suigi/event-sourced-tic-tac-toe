@@ -1,4 +1,4 @@
 package ninja.ranner.tictactoe;
 
-public record Event() {
+public interface Event {
 }

@@ -1,4 +1,4 @@
 package ninja.ranner.tictactoe;
 
-public record GameCreated() {
+public record GameCreated() implements Event {
 }
