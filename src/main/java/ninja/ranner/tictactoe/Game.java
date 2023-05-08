@@ -18,8 +18,14 @@ public class Game {
 
     public static Game from(List<Event> events) {
         Game game = new Game();
-        game.apply(((GameCreated) events.get(0)));
+        game.apply((events.get(0)));
         return game;
+    }
+
+    private void apply(Event event) {
+        if (event instanceof GameCreated) {
+            apply((GameCreated) event);
+        }
     }
 
     private void apply(GameCreated event) {
