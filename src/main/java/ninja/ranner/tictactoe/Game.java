@@ -10,19 +10,19 @@ public class Game {
 
     public static Game create(UUID gameId) {
         Game game = new Game();
-        emit(game, new GameCreated(gameId));
+        game.emit(new GameCreated(gameId));
         return game;
-    }
-
-    private static void emit(Game game, GameCreated event) {
-        game.apply(event);
-        game.events.add(event);
     }
 
     public static Game from(List<Event> events) {
         Game game = new Game();
         events.forEach(game::apply);
         return game;
+    }
+
+    private void emit(GameCreated event) {
+        apply(event);
+        events.add(event);
     }
 
     private void apply(Event event) {
