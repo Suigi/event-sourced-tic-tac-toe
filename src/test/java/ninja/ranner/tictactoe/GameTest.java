@@ -10,6 +10,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GameTest {
 
     @Test
+    public void newGameHasId() throws Exception {
+        UUID gameId = UUID.randomUUID();
+
+        Game game = Game.create(gameId);
+
+        assertThat(game.id())
+            .isEqualTo(null);
+    }
+
+    @Test
     public void creatingGameEmitsGameCreatedEvent() throws Exception {
         UUID gameId = UUID.randomUUID();
         Game game = Game.create(gameId);
