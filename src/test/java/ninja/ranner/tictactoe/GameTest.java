@@ -17,11 +17,11 @@ public class GameTest {
     }
 
     @Test
-    public void gameCanBeCreatedFromEvent() throws Exception {
+    public void gameCreatedFromEventDoesNotEmitEvents() throws Exception {
         Game game = Game.from(List.of(new GameCreated()));
 
-        assertThat(game)
-           .isNotNull();
+        assertThat(game.cullEvents())
+           .isEmpty();
     }
 
 }
