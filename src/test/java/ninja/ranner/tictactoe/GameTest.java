@@ -11,7 +11,7 @@ public class GameTest {
         Game game = Game.create();
 
         assertThat(game.cullEvents())
-                .hasSize(1);
+                .containsExactly(new GameCreated());
     }
 
 }
