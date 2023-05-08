@@ -11,7 +11,7 @@ public class Game {
     public static Game create(UUID gameId) {
         Game game = new Game();
         GameCreated event = new GameCreated(gameId);
-        game.id = event.gameId();
+        game.apply(event);
         game.events.add(event);
         return game;
     }
