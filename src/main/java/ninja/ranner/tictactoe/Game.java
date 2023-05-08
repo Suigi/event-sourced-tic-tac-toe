@@ -11,14 +11,18 @@ public class Game {
     public static Game create(UUID gameId) {
         Game game = new Game();
         GameCreated event = new GameCreated(gameId);
-        game.id = event.gameId();
+        apply(game, event);
         game.events.add(event);
         return game;
     }
 
+    private static void apply(Game game, GameCreated event) {
+        game.id = event.gameId();
+    }
+
     public static Game from(List<Event> events) {
         Game game = new Game();
-        game.id = ((GameCreated)events.get(0)).gameId();
+        apply(game, ((GameCreated) events.get(0)));
         return game;
     }
 
