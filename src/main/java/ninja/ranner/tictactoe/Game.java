@@ -8,7 +8,7 @@ public class Game {
     }
 
     public static Game from(List<Event> events) {
-        return null;
+        return new Game();
     }
 
     public List<Event> cullEvents() {

@@ -19,6 +19,9 @@ public class GameTest {
     @Test
     public void gameCanBeCreatedFromEvent() throws Exception {
         Game game = Game.from(List.of(new GameCreated()));
+
+        assertThat(game)
+           .isNotNull();
     }
 
 }
