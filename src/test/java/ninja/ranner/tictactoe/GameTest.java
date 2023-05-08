@@ -27,4 +27,14 @@ public class GameTest {
            .isEmpty();
     }
 
+    @Test
+    public void gameIsCreatedWithIdFromEvent() throws Exception {
+        UUID gameId = UUID.randomUUID();
+
+        Game game = Game.from(List.of(new GameCreated(gameId)));
+
+        assertThat(game.id())
+            .isEqualTo(null);
+    }
+
 }

@@ -21,4 +21,8 @@ public class Game {
     public List<Event> cullEvents() {
         return events;
     }
+
+    public UUID id() {
+        return null;
+    }
 }
