@@ -8,6 +8,6 @@ public class Game {
     }
 
     public List cullEvents() {
-        return List.of("");
+        return List.of(new GameCreated());
     }
 }
