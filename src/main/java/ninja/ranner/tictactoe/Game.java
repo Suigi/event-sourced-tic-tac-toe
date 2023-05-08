@@ -6,10 +6,12 @@ import java.util.UUID;
 
 public class Game {
     private final List<Event> events = new ArrayList<>();
+    private UUID id = null;
 
     public static Game create(UUID gameId) {
         Game game = new Game();
         game.events.add(new GameCreated(gameId));
+        game.id = gameId;
         return game;
     }
 
@@ -23,6 +25,6 @@ public class Game {
     }
 
     public UUID id() {
-        return null;
+        return id;
     }
 }

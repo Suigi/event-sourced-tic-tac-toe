@@ -16,7 +16,7 @@ public class GameTest {
         Game game = Game.create(gameId);
 
         assertThat(game.id())
-            .isEqualTo(null);
+            .isEqualTo(gameId);
     }
 
     @Test
