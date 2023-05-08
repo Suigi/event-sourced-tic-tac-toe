@@ -7,7 +7,7 @@ public class Game {
         return new Game();
     }
 
-    public List cullEvents() {
+    public List<Event> cullEvents() {
         return List.of(new GameCreated());
     }
 }
