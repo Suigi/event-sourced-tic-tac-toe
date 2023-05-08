@@ -44,7 +44,7 @@ public class GameTest {
         Game game = Game.from(List.of(new GameCreated(gameId)));
 
         assertThat(game.id())
-            .isEqualTo(null);
+            .isEqualTo(gameId);
     }
 
 }

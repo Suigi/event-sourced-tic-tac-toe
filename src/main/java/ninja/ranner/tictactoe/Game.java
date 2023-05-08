@@ -16,7 +16,9 @@ public class Game {
     }
 
     public static Game from(List<Event> events) {
-        return new Game();
+        Game game = new Game();
+        game.id = ((GameCreated)events.get(0)).gameId();
+        return game;
     }
 
 
