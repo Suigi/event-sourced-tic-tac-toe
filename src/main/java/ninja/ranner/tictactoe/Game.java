@@ -8,6 +8,9 @@ public class Game {
     private final List<Event> events = new ArrayList<>();
     private UUID id = null;
 
+    private Game() {
+    }
+
     public static Game create(UUID gameId) {
         Game game = new Game();
         game.emit(new GameCreated(gameId));
