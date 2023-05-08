@@ -10,10 +10,13 @@ public class Game {
 
     public static Game create(UUID gameId) {
         Game game = new Game();
-        GameCreated event = new GameCreated(gameId);
+        emit(game, new GameCreated(gameId));
+        return game;
+    }
+
+    private static void emit(Game game, GameCreated event) {
         game.apply(event);
         game.events.add(event);
-        return game;
     }
 
     public static Game from(List<Event> events) {
