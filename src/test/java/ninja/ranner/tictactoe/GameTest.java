@@ -29,6 +29,16 @@ public class GameTest {
     }
 
     @Test
+    public void culledEventsAreRemovedFromList() throws Exception {
+        UUID gameId = UUID.randomUUID();
+        Game game = Game.create(gameId);
+        game.cullEvents();
+
+        assertThat(game.cullEvents())
+           .isEmpty();
+    }
+
+    @Test
     public void gameCreatedFromEventDoesNotEmitEvents() throws Exception {
         UUID gameId = UUID.randomUUID();
         Game game = Game.from(List.of(new GameCreated(gameId)));

@@ -29,7 +29,9 @@ public class Game {
     }
 
     public List<Event> cullEvents() {
-        return events;
+        List<Event> culledEvents = List.copyOf(events);
+        events.clear();
+        return culledEvents;
     }
 
     public UUID id() {
