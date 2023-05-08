@@ -2,13 +2,14 @@ package ninja.ranner.tictactoe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Game {
     private final List<Event> events = new ArrayList<>();
 
-    public static Game create() {
+    public static Game create(UUID gameId) {
         Game game = new Game();
-        game.events.add(new GameCreated());
+        game.events.add(new GameCreated(gameId));
         return game;
     }
 
