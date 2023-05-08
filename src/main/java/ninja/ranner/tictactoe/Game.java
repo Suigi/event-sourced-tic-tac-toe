@@ -11,7 +11,7 @@ public class Game {
     public static Game create(UUID gameId) {
         Game game = new Game();
         GameCreated event = new GameCreated(gameId);
-        game.apply(event);
+        game.id = event.gameId();
         game.events.add(event);
         return game;
     }
@@ -23,13 +23,9 @@ public class Game {
     }
 
     private void apply(Event event) {
-        if (event instanceof GameCreated) {
-            apply((GameCreated) event);
+        if (event instanceof GameCreated gameCreated) {
+            id = gameCreated.gameId();
         }
-    }
-
-    private void apply(GameCreated event) {
-        id = event.gameId();
     }
 
     public List<Event> cullEvents() {
