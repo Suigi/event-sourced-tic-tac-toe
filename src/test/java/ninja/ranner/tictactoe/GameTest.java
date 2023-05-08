@@ -2,6 +2,8 @@ package ninja.ranner.tictactoe;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GameTest {
@@ -12,6 +14,11 @@ public class GameTest {
 
         assertThat(game.cullEvents())
                 .containsExactly(new GameCreated());
+    }
+
+    @Test
+    public void gameCanBeCreatedFromEvent() throws Exception {
+        Game.from(List.of(new GameCreated()));
     }
 
 }

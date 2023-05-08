@@ -7,6 +7,11 @@ public class Game {
         return new Game();
     }
 
+    public static void from(List<Event> events) {
+
+
+    }
+
     public List<Event> cullEvents() {
         return List.of(new GameCreated());
     }
