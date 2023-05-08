@@ -18,7 +18,7 @@ public class GameTest {
 
     @Test
     public void gameCanBeCreatedFromEvent() throws Exception {
-        Game.from(List.of(new GameCreated()));
+        Game game = Game.from(List.of(new GameCreated()));
     }
 
 }
