@@ -18,7 +18,7 @@ public class Game {
 
     public static Game from(List<Event> events) {
         Game game = new Game();
-        game.apply((events.get(0)));
+        events.forEach(game::apply);
         return game;
     }
 
