@@ -10,8 +10,9 @@ public class Game {
 
     public static Game create(UUID gameId) {
         Game game = new Game();
-        game.events.add(new GameCreated(gameId));
-        game.id = gameId;
+        GameCreated event = new GameCreated(gameId);
+        game.id = event.gameId();
+        game.events.add(event);
         return game;
     }
 
