@@ -9,52 +9,52 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class GameTest {
 
-    @Test
-    public void newGameHasId() throws Exception {
-        UUID gameId = UUID.randomUUID();
+  @Test
+  public void newGameHasId() throws Exception {
+    UUID gameId = UUID.randomUUID();
 
-        Game game = Game.create(gameId);
+    Game game = Game.create(gameId);
 
-        assertThat(game.id())
-            .isEqualTo(gameId);
-    }
+    assertThat(game.id())
+        .isEqualTo(gameId);
+  }
 
-    @Test
-    public void creatingGameEmitsGameCreatedEvent() throws Exception {
-        UUID gameId = UUID.randomUUID();
-        Game game = Game.create(gameId);
+  @Test
+  public void creatingGameEmitsGameCreatedEvent() throws Exception {
+    UUID gameId = UUID.randomUUID();
+    Game game = Game.create(gameId);
 
-        assertThat(game.cullEvents())
-                .containsExactly(new GameCreated(gameId));
-    }
+    assertThat(game.cullEvents())
+        .containsExactly(new GameCreated(gameId));
+  }
 
-    @Test
-    public void culledEventsAreRemovedFromList() throws Exception {
-        UUID gameId = UUID.randomUUID();
-        Game game = Game.create(gameId);
-        game.cullEvents();
+  @Test
+  public void culledEventsAreRemovedFromList() throws Exception {
+    UUID gameId = UUID.randomUUID();
+    Game game = Game.create(gameId);
+    game.cullEvents();
 
-        assertThat(game.cullEvents())
-           .isEmpty();
-    }
+    assertThat(game.cullEvents())
+        .isEmpty();
+  }
 
-    @Test
-    public void gameCreatedFromEventDoesNotEmitEvents() throws Exception {
-        UUID gameId = UUID.randomUUID();
-        Game game = Game.from(List.of(new GameCreated(gameId)));
+  @Test
+  public void gameCreatedFromEventDoesNotEmitEvents() throws Exception {
+    UUID gameId = UUID.randomUUID();
+    Game game = Game.from(List.of(new GameCreated(gameId)));
 
-        assertThat(game.cullEvents())
-           .isEmpty();
-    }
+    assertThat(game.cullEvents())
+        .isEmpty();
+  }
 
-    @Test
-    public void gameIsCreatedWithIdFromEvent() throws Exception {
-        UUID gameId = UUID.randomUUID();
+  @Test
+  public void gameIsCreatedWithIdFromEvent() throws Exception {
+    UUID gameId = UUID.randomUUID();
 
-        Game game = Game.from(List.of(new GameCreated(gameId)));
+    Game game = Game.from(List.of(new GameCreated(gameId)));
 
-        assertThat(game.id())
-            .isEqualTo(gameId);
-    }
+    assertThat(game.id())
+        .isEqualTo(gameId);
+  }
 
 }
