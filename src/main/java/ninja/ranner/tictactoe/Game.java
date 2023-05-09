@@ -11,10 +11,9 @@ public class Game {
   private Game() {
   }
 
-  public static Game create(UUID gameId) {
-    GameId id = GameId.of(gameId);
+  public static Game create(GameId gameId) {
     Game game = new Game();
-    game.emit(new GameCreated(id));
+    game.emit(new GameCreated(gameId));
     return game;
   }
 

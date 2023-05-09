@@ -13,7 +13,7 @@ public class GameTest {
   public void newGameHasId() throws Exception {
     UUID gameId = UUID.randomUUID();
 
-    Game game = Game.create(gameId);
+    Game game = Game.create(GameId.of(gameId));
 
     assertThat(game.id())
         .isEqualTo(gameId);
@@ -22,7 +22,7 @@ public class GameTest {
   @Test
   public void creatingGameEmitsGameCreatedEvent() throws Exception {
     UUID gameId = UUID.randomUUID();
-    Game game = Game.create(gameId);
+    Game game = Game.create(GameId.of(gameId));
 
     assertThat(game.cullEvents())
         .containsExactly(new GameCreated(gameId));
@@ -31,7 +31,7 @@ public class GameTest {
   @Test
   public void eventsCanOnlyBeCulledOnce() throws Exception {
     UUID gameId = UUID.randomUUID();
-    Game game = Game.create(gameId);
+    Game game = Game.create(GameId.of(gameId));
     game.cullEvents();
 
     assertThat(game.cullEvents())
