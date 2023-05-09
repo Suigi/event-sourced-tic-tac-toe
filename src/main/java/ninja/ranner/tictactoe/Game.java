@@ -2,7 +2,6 @@ package ninja.ranner.tictactoe;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class Game {
   private final List<Event> events = new ArrayList<>();
@@ -40,7 +39,7 @@ public class Game {
     return culledEvents;
   }
 
-  public UUID id() {
-    return id.value();
+  public GameId id() {
+    return id;
   }
 }

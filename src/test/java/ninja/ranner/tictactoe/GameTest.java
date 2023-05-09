@@ -11,9 +11,9 @@ public class GameTest {
 
   @Test
   public void newGameHasId() throws Exception {
-    UUID gameId = UUID.randomUUID();
+    GameId gameId = GameId.of(UUID.randomUUID());
 
-    Game game = Game.create(GameId.of(gameId));
+    Game game = Game.create(gameId);
 
     assertThat(game.id())
         .isEqualTo(gameId);
@@ -49,7 +49,7 @@ public class GameTest {
 
   @Test
   public void gameIsCreatedWithIdFromEvent() throws Exception {
-    UUID gameId = UUID.randomUUID();
+    GameId gameId = GameId.create();
 
     Game game = Game.from(List.of(new GameCreated(gameId)));
 
