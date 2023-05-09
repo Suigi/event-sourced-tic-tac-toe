@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public class Game {
   private final List<Event> events = new ArrayList<>();
-  private UUID id = null;
+  private GameId id = null;
 
   private Game() {
   }
@@ -41,6 +41,6 @@ public class Game {
   }
 
   public UUID id() {
-    return id;
+    return id.value();
   }
 }

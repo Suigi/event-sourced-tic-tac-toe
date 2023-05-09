@@ -2,13 +2,13 @@ package ninja.ranner.tictactoe;
 
 import java.util.UUID;
 
-public record GameCreated(java.util.UUID gameId) implements Event {
+public record GameCreated(GameId gameId) implements Event {
 
   public GameCreated(GameId gameId) {
-    this(gameId.value());
+    this.gameId = gameId;
   }
 
   public GameCreated(UUID gameId) {
-    this.gameId = gameId;
+    this(GameId.of(gameId));
   }
 }
