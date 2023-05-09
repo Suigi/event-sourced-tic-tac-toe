@@ -42,4 +42,8 @@ public class Game {
   public GameId id() {
     return id;
   }
+
+  public void join(PlayerId playerId) {
+
+  }
 }

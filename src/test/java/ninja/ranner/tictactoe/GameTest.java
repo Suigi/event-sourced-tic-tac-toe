@@ -57,4 +57,13 @@ public class GameTest {
         .isEqualTo(gameId);
   }
 
+  @Test
+  public void gameCanBeJoined() throws Exception {
+    Game game = Game.create(GameId.create());
+    game.cullEvents();
+
+    game.join(PlayerId.create());
+
+  }
+
 }
