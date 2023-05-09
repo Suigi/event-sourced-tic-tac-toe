@@ -29,7 +29,7 @@ public class GameTest {
   }
 
   @Test
-  public void culledEventsAreRemovedFromList() throws Exception {
+  public void eventsCanOnlyBeCulledOnce() throws Exception {
     UUID gameId = UUID.randomUUID();
     Game game = Game.create(gameId);
     game.cullEvents();
