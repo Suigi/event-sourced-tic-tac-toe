@@ -42,10 +42,15 @@ public class Game extends Aggregate {
   }
 
   public void join(PlayerId playerId) {
+    ensureGameIsNotFull();
+
+    emit(new GameJoined(id, playerId));
+  }
+
+  private void ensureGameIsNotFull() {
     if (players.size() == 2) {
       throw new GameFull();
     }
-    emit(new GameJoined(id, playerId));
   }
 
 }
