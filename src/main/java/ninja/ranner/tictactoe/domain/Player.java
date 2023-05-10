@@ -5,9 +5,6 @@ import java.util.List;
 public class Player extends Aggregate {
   private PlayerId id;
 
-  private Player() {
-  }
-
   public static Player create(PlayerId playerId) {
     Player player = new Player();
     player.emit(new PlayerRegistered(playerId));
@@ -18,6 +15,9 @@ public class Player extends Aggregate {
     Player player = new Player();
     events.forEach(player::apply);
     return player;
+  }
+
+  private Player() {
   }
 
   @Override

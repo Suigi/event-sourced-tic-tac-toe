@@ -8,9 +8,6 @@ public class Game extends Aggregate {
   private GameId id = null;
   private final List<PlayerId> players = new ArrayList<>();
 
-  private Game() {
-  }
-
   public static Game create(GameId gameId) {
     Game game = new Game();
     game.emit(new GameCreated(gameId));
@@ -21,6 +18,9 @@ public class Game extends Aggregate {
     Game game = new Game();
     events.forEach(game::apply);
     return game;
+  }
+
+  private Game() {
   }
 
   @Override
