@@ -33,6 +33,9 @@ public class Game {
     if (event instanceof GameCreated gameCreated) {
       id = gameCreated.gameId();
     }
+    if (event instanceof GameJoined gameJoined) {
+      players.add(gameJoined.playerId());
+    }
   }
 
   public List<Event> cullEvents() {

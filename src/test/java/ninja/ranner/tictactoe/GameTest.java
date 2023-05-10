@@ -85,8 +85,8 @@ public class GameTest {
 
     game.join(playerId);
 
-//    assertThat(game.players())
-//       .containsExactly(playerId);
+    assertThat(game.players())
+       .containsExactly(playerId);
   }
 
 }
