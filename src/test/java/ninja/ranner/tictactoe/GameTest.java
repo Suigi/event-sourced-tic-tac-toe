@@ -21,8 +21,9 @@ public class GameTest {
 
   @Test
   public void creatingGameEmitsGameCreatedEvent() throws Exception {
-    UUID gameId = UUID.randomUUID();
-    Game game = Game.create(GameId.of(gameId));
+    GameId gameId = GameId.of(UUID.randomUUID());
+
+    Game game = Game.create(gameId);
 
     assertThat(game.cullEvents())
         .containsExactly(new GameCreated(gameId));
@@ -63,6 +64,9 @@ public class GameTest {
     game.cullEvents();
 
     game.join(PlayerId.create());
+
+//    assertThat(game.cullEvents())
+//       .containsExactly(new gamejjo);
 
   }
 
