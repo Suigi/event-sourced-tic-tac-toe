@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class Game {
-  private final List<Event> events = new ArrayList<>();
+public class Game extends Aggregate {
   private GameId id = null;
   private final List<PlayerId> players = new ArrayList<>();
 
@@ -24,18 +23,8 @@ public class Game {
     return game;
   }
 
-  private void emit(Event event) {
-    apply(event);
-    events.add(event);
-  }
-
-  public List<Event> cullEvents() {
-    List<Event> culledEvents = List.copyOf(events);
-    events.clear();
-    return culledEvents;
-  }
-
-  private void apply(Event event) {
+  @Override
+  protected void apply(Event event) {
     if (event instanceof GameCreated gameCreated) {
       id = gameCreated.gameId();
     }
