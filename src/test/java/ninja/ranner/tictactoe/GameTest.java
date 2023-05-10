@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class GameTest {
 
@@ -95,7 +96,8 @@ public class GameTest {
     game.join(PlayerId.create());
     game.join(PlayerId.create());
 
-//    assertThatThrownBy(() -> game.join(PlayerId.create()));
+    assertThatThrownBy(() -> game.join(PlayerId.create()))
+        .isExactlyInstanceOf(GameFull.class);
   }
 
 }
