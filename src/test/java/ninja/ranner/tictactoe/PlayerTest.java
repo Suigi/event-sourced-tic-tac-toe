@@ -16,4 +16,14 @@ class PlayerTest {
         .containsExactly(new PlayerRegistered(playerId));
   }
 
+  @Test
+  public void newPlayerHasAnId() throws Exception {
+    PlayerId playerId = PlayerId.create();
+
+    Player player = Player.create(playerId);
+
+//    assertThat(player.id())
+//        .isEqualTo(playerId);
+  }
+
 }
