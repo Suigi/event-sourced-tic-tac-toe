@@ -40,7 +40,7 @@ public class GameTest {
 
   @Test
   public void gameCreatedFromEventDoesNotEmitEvents() throws Exception {
-    UUID gameId = UUID.randomUUID();
+    GameId gameId = GameId.of(UUID.randomUUID());
     Game game = Game.from(List.of(new GameCreated(gameId)));
 
     assertThat(game.cullEvents())
