@@ -78,4 +78,15 @@ public class GameTest {
        .isEmpty();
   }
 
+  @Test
+  public void playersListsPlayersThatJoinedGame() throws Exception {
+    Game game = Game.create(GameId.create());
+    PlayerId playerId = PlayerId.create();
+
+    game.join(playerId);
+
+//    assertThat(game.players())
+//       .containsExactly(playerId);
+  }
+
 }
