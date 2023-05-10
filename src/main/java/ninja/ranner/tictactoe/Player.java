@@ -12,7 +12,9 @@ public class Player extends Aggregate {
   }
 
   public static Player from(List<Event> events) {
-    return new Player();
+    Player player = new Player();
+    events.forEach(player::apply);
+    return player;
   }
 
   @Override
