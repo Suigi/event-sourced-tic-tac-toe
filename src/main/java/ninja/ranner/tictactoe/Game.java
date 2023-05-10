@@ -50,6 +50,6 @@ public class Game {
   }
 
   public Stream<PlayerId> players() {
-    return Stream.empty();
+    return players.stream();
   }
 }
