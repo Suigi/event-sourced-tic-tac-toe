@@ -2,6 +2,7 @@ package ninja.ranner.tictactoe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Game {
   private final List<Event> events = new ArrayList<>();
@@ -45,5 +46,9 @@ public class Game {
 
   public void join(PlayerId playerId) {
     emit(new GameJoined(id, playerId));
+  }
+
+  public Stream<PlayerId> players() {
+    return null;
   }
 }

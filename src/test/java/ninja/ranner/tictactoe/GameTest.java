@@ -70,5 +70,12 @@ public class GameTest {
        .containsExactly(new GameJoined(gameId, playerId));
   }
 
+  @Test
+  public void newGameHasEmptyListOfPlayers() throws Exception {
+    Game game = Game.create(GameId.create());
+
+    assertThat(game.players())
+       .isNull();
+  }
 
 }
