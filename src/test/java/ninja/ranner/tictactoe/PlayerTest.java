@@ -2,6 +2,8 @@ package ninja.ranner.tictactoe;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PlayerTest {
@@ -24,6 +26,14 @@ class PlayerTest {
 
     assertThat(player.id())
         .isEqualTo(playerId);
+  }
+
+  @Test
+  public void playerCanBeCreatedFromEvents() throws Exception {
+    PlayerId playerId = PlayerId.create();
+
+    Player.from(List.of(new PlayerRegistered(playerId)));
+
   }
 
 }

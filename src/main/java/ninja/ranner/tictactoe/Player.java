@@ -1,5 +1,7 @@
 package ninja.ranner.tictactoe;
 
+import java.util.List;
+
 public class Player extends Aggregate {
   private PlayerId id;
 
@@ -7,6 +9,11 @@ public class Player extends Aggregate {
     Player player = new Player();
     player.emit(new PlayerRegistered(playerId));
     return player;
+  }
+
+  public static void from(List<Event> events) {
+
+
   }
 
   @Override
