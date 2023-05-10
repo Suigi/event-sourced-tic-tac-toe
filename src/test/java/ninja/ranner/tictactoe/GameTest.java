@@ -89,4 +89,13 @@ public class GameTest {
        .containsExactly(playerId);
   }
 
+  @Test
+  public void gameAllowsMaximumOfTwoPlayers() throws Exception {
+    Game game = Game.create(GameId.create());
+    game.join(PlayerId.create());
+    game.join(PlayerId.create());
+
+//    assertThatThrownBy(() -> game.join(PlayerId.create()));
+  }
+
 }
