@@ -32,10 +32,11 @@ class PlayerTest {
   public void playerCanBeCreatedFromEvents() throws Exception {
     PlayerId playerId = PlayerId.create();
 
-    Player player = Player.from(List.of(new PlayerRegistered(playerId)));
+    Player player = Player.from(List.of(
+        new PlayerRegistered(playerId)));
 
     assertThat(player.id())
-       .isEqualTo(playerId);
+        .isEqualTo(playerId);
   }
 
 }
