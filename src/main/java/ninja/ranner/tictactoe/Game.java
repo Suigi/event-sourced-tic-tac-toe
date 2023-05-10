@@ -48,12 +48,12 @@ public class Game {
     return id;
   }
 
-  public void join(PlayerId playerId) {
-    emit(new GameJoined(id, playerId));
-  }
-
   public Stream<PlayerId> players() {
     return players.stream();
+  }
+
+  public void join(PlayerId playerId) {
+    emit(new GameJoined(id, playerId));
   }
 
 }
