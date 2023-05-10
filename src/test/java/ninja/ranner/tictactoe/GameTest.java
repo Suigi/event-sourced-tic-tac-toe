@@ -75,7 +75,7 @@ public class GameTest {
     Game game = Game.create(GameId.create());
 
     assertThat(game.players())
-       .isNull();
+       .isEmpty();
   }
 
 }

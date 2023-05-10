@@ -49,6 +49,6 @@ public class Game {
   }
 
   public Stream<PlayerId> players() {
-    return null;
+    return Stream.empty();
   }
 }
