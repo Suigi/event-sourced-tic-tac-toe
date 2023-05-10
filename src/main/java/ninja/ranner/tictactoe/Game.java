@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 public class Game {
   private final List<Event> events = new ArrayList<>();
   private GameId id = null;
+  private final List<PlayerId> players = new ArrayList<>();
 
   private Game() {
   }
