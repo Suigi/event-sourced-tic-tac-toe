@@ -22,8 +22,8 @@ class PlayerTest {
 
     Player player = Player.create(playerId);
 
-//    assertThat(player.id())
-//        .isEqualTo(playerId);
+    assertThat(player.id())
+        .isEqualTo(playerId);
   }
 
 }
