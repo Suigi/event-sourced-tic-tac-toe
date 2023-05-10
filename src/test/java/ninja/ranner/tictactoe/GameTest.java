@@ -58,7 +58,7 @@ public class GameTest {
   }
 
   @Test
-  public void gameCanBeJoined() throws Exception {
+  public void joiningGameEmitsGameJoined() throws Exception {
     GameId gameId = GameId.create();
     PlayerId playerId = PlayerId.create();
     Game game = Game.create(gameId);
@@ -68,7 +68,7 @@ public class GameTest {
 
     assertThat(game.cullEvents())
        .containsExactly(new GameJoined(gameId, playerId));
-
   }
+
 
 }
