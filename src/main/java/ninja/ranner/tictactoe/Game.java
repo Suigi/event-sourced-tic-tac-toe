@@ -29,6 +29,12 @@ public class Game {
     events.add(event);
   }
 
+  public List<Event> cullEvents() {
+    List<Event> culledEvents = List.copyOf(events);
+    events.clear();
+    return culledEvents;
+  }
+
   private void apply(Event event) {
     if (event instanceof GameCreated gameCreated) {
       id = gameCreated.gameId();
@@ -36,12 +42,6 @@ public class Game {
     if (event instanceof GameJoined gameJoined) {
       players.add(gameJoined.playerId());
     }
-  }
-
-  public List<Event> cullEvents() {
-    List<Event> culledEvents = List.copyOf(events);
-    events.clear();
-    return culledEvents;
   }
 
   public GameId id() {
@@ -55,4 +55,5 @@ public class Game {
   public Stream<PlayerId> players() {
     return players.stream();
   }
+
 }
