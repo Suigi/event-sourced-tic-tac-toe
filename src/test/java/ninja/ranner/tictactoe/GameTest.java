@@ -31,8 +31,7 @@ public class GameTest {
 
   @Test
   public void eventsCanOnlyBeCulledOnce() throws Exception {
-    UUID gameId = UUID.randomUUID();
-    Game game = Game.create(GameId.of(gameId));
+    Game game = Game.create(GameId.of(UUID.randomUUID()));
     game.cullEvents();
 
     assertThat(game.cullEvents())
