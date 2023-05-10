@@ -20,8 +20,7 @@ public class Game extends Aggregate {
     return game;
   }
 
-  private Game() {
-  }
+  private Game() {}
 
   @Override
   protected void apply(Event event) {

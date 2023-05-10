@@ -17,8 +17,7 @@ public class Player extends Aggregate {
     return player;
   }
 
-  private Player() {
-  }
+  private Player() {}
 
   @Override
   protected void apply(Event event) {
