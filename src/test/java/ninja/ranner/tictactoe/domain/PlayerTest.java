@@ -1,4 +1,4 @@
-package ninja.ranner.tictactoe;
+package ninja.ranner.tictactoe.domain;
 
 import org.junit.jupiter.api.Test;
 
