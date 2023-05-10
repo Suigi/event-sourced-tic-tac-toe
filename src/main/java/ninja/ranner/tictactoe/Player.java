@@ -11,9 +11,8 @@ public class Player extends Aggregate {
     return player;
   }
 
-  public static void from(List<Event> events) {
-
-
+  public static Player from(List<Event> events) {
+    return new Player();
   }
 
   @Override

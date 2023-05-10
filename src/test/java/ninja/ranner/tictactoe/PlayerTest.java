@@ -34,6 +34,7 @@ class PlayerTest {
 
     Player.from(List.of(new PlayerRegistered(playerId)));
 
+
   }
 
 }
