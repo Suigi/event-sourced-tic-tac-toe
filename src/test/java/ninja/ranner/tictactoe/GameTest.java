@@ -59,13 +59,15 @@ public class GameTest {
 
   @Test
   public void gameCanBeJoined() throws Exception {
-    Game game = Game.create(GameId.create());
+    GameId gameId = GameId.create();
+    PlayerId playerId = PlayerId.create();
+    Game game = Game.create(gameId);
     game.cullEvents();
 
-    game.join(PlayerId.create());
+    game.join(playerId);
 
-//    assertThat(game.cullEvents())
-//       .containsExactly(new gamejjo);
+    assertThat(game.cullEvents())
+       .containsExactly(new GameJoined(gameId, playerId));
 
   }
 

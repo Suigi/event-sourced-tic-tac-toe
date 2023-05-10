@@ -22,7 +22,7 @@ public class Game {
     return game;
   }
 
-  private void emit(GameCreated event) {
+  private void emit(Event event) {
     apply(event);
     events.add(event);
   }
@@ -44,6 +44,6 @@ public class Game {
   }
 
   public void join(PlayerId playerId) {
-
+    emit(new GameJoined(id, playerId));
   }
 }
