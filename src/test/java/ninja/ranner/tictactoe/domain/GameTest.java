@@ -22,7 +22,7 @@ public class GameTest {
 
   @Test
   public void creatingGameEmitsGameCreatedEvent() throws Exception {
-    GameId gameId = GameId.of(UUID.randomUUID());
+    GameId gameId = GameId.create();
 
     Game game = Game.create(gameId);
 
