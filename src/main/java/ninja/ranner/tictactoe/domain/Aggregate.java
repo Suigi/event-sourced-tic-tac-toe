@@ -6,7 +6,7 @@ import java.util.List;
 public abstract class Aggregate {
   private final List<Event> events = new ArrayList<>();
 
-  protected void emit(Event event) {
+  protected final void emit(Event event) {
     apply(event);
     events.add(event);
   }
