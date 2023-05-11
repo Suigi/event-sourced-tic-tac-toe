@@ -12,7 +12,7 @@ public class GameTest {
 
   @Test
   public void newGameHasId() throws Exception {
-    GameId gameId = GameId.of(UUID.randomUUID());
+    GameId gameId = GameId.create();
 
     Game game = Game.create(gameId);
 
