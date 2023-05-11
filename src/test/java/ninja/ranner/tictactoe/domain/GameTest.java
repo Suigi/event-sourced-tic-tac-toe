@@ -3,7 +3,6 @@ package ninja.ranner.tictactoe.domain;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -32,7 +31,7 @@ public class GameTest {
 
   @Test
   public void eventsCanOnlyBeCulledOnce() throws Exception {
-    Game game = Game.create(GameId.of(UUID.randomUUID()));
+    Game game = Game.create(GameId.create());
     game.cullEvents();
 
     assertThat(game.cullEvents())
@@ -41,7 +40,7 @@ public class GameTest {
 
   @Test
   public void gameCreatedFromEventDoesNotEmitEvents() throws Exception {
-    GameId gameId = GameId.of(UUID.randomUUID());
+    GameId gameId = GameId.create();
     Game game = Game.from(List.of(new GameCreated(gameId)));
 
     assertThat(game.cullEvents())
