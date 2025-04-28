@@ -9,6 +9,8 @@ import java.util.List;
 public class OpenGamesProjection {
     private final List<GameSummary> games = new ArrayList<>();
 
+    public record GameSummary(GameId id, String name) {}
+
     public static OpenGamesProjection onDemand(EventStore eventStore) {
         OpenGamesProjection projection = new OpenGamesProjection();
         eventStore.findAllForTypes(List.of(
@@ -20,7 +22,11 @@ public class OpenGamesProjection {
         return projection;
     }
 
-    public void apply(Event event) {
+    public List<GameSummary> games() {
+        return games;
+    }
+
+    private void apply(Event event) {
         switch (event) {
             case GameCreated(GameId gameId, String newGameName) -> add(gameId, newGameName);
             case GameDrawn(GameId gameId) -> removeById(gameId);
@@ -36,10 +42,4 @@ public class OpenGamesProjection {
     private void removeById(GameId gameId) {
         games.removeIf(summary -> summary.id == gameId);
     }
-
-    public List<GameSummary> games() {
-        return games;
-    }
-
-    public record GameSummary(GameId id, String name) {}
 }
