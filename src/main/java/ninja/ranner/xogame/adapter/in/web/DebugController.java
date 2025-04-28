@@ -8,6 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+import java.util.UUID;
+
 @Controller
 @RequestMapping("/debug/")
 public class DebugController {
@@ -21,7 +24,11 @@ public class DebugController {
     }
 
     @GetMapping("lobby")
-    public String lobby() {
+    public String lobby(Model model) {
+        model.addAttribute("games", List.of(
+                new LobbyController.GameSummary(UUID.randomUUID().toString(), "First Game"),
+                new LobbyController.GameSummary(UUID.randomUUID().toString(), "Second Game")
+        ));
         return "lobby";
     }
 }

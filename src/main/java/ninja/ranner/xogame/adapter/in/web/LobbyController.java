@@ -30,14 +30,16 @@ public class LobbyController {
         return "lobby";
     }
 
-    public record GameSummary(GameId gameId, String name) {}
+    public record GameSummary(String gameId, String name) {}
 
     static class AllGamesProjection {
         private final List<GameSummary> games = new ArrayList<>();
 
         public void apply(Event event) {
             if (event instanceof GameCreated(GameId gameId, String newGameName)) {
-                games.add(new GameSummary(gameId, newGameName));
+                games.add(new GameSummary(
+                        gameId.id().toString(),
+                        newGameName));
             }
         }
 

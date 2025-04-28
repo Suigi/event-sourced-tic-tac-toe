@@ -1,3 +1,6 @@
+@import ninja.ranner.xogame.adapter.in.web.LobbyController.GameSummary
+@import java.util.List
+@param List<GameSummary> games
 <!DOCTYPE html>
 <html lang="en">
 
@@ -30,7 +33,9 @@
 <section>
     <h3>Existing Games</h3>
     <ul>
-        <li><a href="games/GAME_ID">Some Game</a></li>
+        @for(GameSummary game : games)
+            <li><a href="games/${game.gameId()}">${game.name()}</a></li>
+        @endfor
     </ul>
 </section>
 </body>
