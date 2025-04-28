@@ -2,9 +2,11 @@ package ninja.ranner.xogame.adapter.in.web;
 
 import ninja.ranner.xogame.application.port.GameRepository;
 import ninja.ranner.xogame.application.port.InMemoryGameRepository;
+import ninja.ranner.xogame.domain.Cell;
 import ninja.ranner.xogame.domain.Game;
 import ninja.ranner.xogame.domain.GameId;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.ConcurrentModel;
 
@@ -24,7 +26,71 @@ class GameControllerTest {
 
         assertThat(model)
                 .extracting("game", InstanceOfAssertFactories.type(GameController.GameView.class))
-                .isEqualTo(new GameController.GameView("Game Name"));
+                .extracting(GameController.GameView::name)
+                .isEqualTo("Game Name");
     }
+
+    @Nested
+    public class GameViewTest {
+        @Test
+        void containsGameName() {
+            Game game = Game.create(GameId.random(), "Game Name");
+
+            GameController.GameView gameView = GameController.GameView.from(game);
+
+            assertThat(gameView.name())
+                    .isEqualTo("Game Name");
+        }
+
+        @Test
+        void fillOfEmptyCellIsEmptyString() {
+            Game game = Game.create(GameId.random(), "IRRELEVANT GAME NAME");
+
+            GameController.GameView gameView = GameController.GameView.from(game);
+
+            assertThat(gameView.cellAt(1, 1))
+                    .isEqualTo("");
+        }
+
+        @Test
+        void fillOfFilledCellIsNameOfThePlayer() {
+            Game game = Game.create(GameId.random(), "IRRELEVANT GAME NAME");
+            game.fillCell(Cell.at(1,1));
+            game.fillCell(Cell.at(2,2));
+
+            GameController.GameView gameView = GameController.GameView.from(game);
+
+            assertThat(gameView.cellAt(1, 1))
+                    .isEqualTo("X");
+            assertThat(gameView.cellAt(2, 2))
+                    .isEqualTo("O");
+        }
+
+        @Test
+        void classOfEmptyCellIsOnlyCell() {
+            Game game = Game.create(GameId.random(), "IRRELEVANT GAME NAME");
+
+            GameController.GameView gameView = GameController.GameView.from(game);
+
+            assertThat(gameView.cssClassFor(0, 0))
+                    .isEqualTo("cell");
+        }
+
+        @Test
+        void classOfFilledCellContainsNameOfThePlayer() {
+            Game game = Game.create(GameId.random(), "IRRELEVANT GAME NAME");
+            game.fillCell(Cell.at(1,1));
+            game.fillCell(Cell.at(2,2));
+
+            GameController.GameView gameView = GameController.GameView.from(game);
+
+            assertThat(gameView.cssClassFor(1, 1))
+                    .isEqualTo("cell player-x");
+            assertThat(gameView.cssClassFor(2, 2))
+                    .isEqualTo("cell player-o");
+        }
+
+    }
+
 
 }
