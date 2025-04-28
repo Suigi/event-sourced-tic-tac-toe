@@ -1,6 +1,7 @@
 package ninja.ranner.xogame.domain;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Board {
     static final List<List<Cell>> winningArrangements = List.of(
@@ -20,11 +21,6 @@ public class Board {
 
     // Queries
 
-    Player cell(Cell key) {
-        // TODO make this return an Optional
-        return board.get(key);
-    }
-
     boolean isDraw() {
         return board.size() == 9;
     }
@@ -38,20 +34,20 @@ public class Board {
     }
 
     private Optional<Player> determineWinner(List<Cell> cells) {
-        List<Player> fills = cells.stream()
-                .map(this::cell)
+        return cells.stream()
+
+                // Map the cells to who filled them, and filter out any unfilled cells
+                .map(board::get)
                 .filter(Objects::nonNull)
-                .toList();
-        if (fills.size() != 3) {
-            return Optional.empty();
-        }
-        if (fills.stream().allMatch(Player.X::equals)) {
-            return Optional.of(Player.X);
-        }
-        if (fills.stream().allMatch(Player.O::equals)) {
-            return Optional.of(Player.O);
-        }
-        return Optional.empty();
+
+                // Make a grouping of player to number cells filled by them
+                .collect(Collectors.groupingBy(x -> x, Collectors.counting()))
+                .entrySet().stream()
+
+                // Find the first player who filled three cells
+                .filter((entry) -> entry.getValue() == 3)
+                .map(Map.Entry::getKey)
+                .findFirst();
     }
 
     public Map<Cell, Player> asMap() {
