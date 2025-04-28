@@ -1,14 +1,13 @@
 package ninja.ranner.xogame.adapter.in.web;
 
 import ninja.ranner.xogame.application.port.EventStore;
+import ninja.ranner.xogame.domain.AllGamesProjection;
 import ninja.ranner.xogame.domain.Event;
 import ninja.ranner.xogame.domain.GameCreated;
-import ninja.ranner.xogame.domain.GameId;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -28,24 +27,6 @@ public class LobbyController {
 
         model.addAttribute("games", allGames.games());
         return "lobby";
-    }
-
-    public record GameSummary(String gameId, String name) {}
-
-    static class AllGamesProjection {
-        private final List<GameSummary> games = new ArrayList<>();
-
-        public void apply(Event event) {
-            if (event instanceof GameCreated(GameId gameId, String newGameName)) {
-                games.add(new GameSummary(
-                        gameId.uuid().toString(),
-                        newGameName));
-            }
-        }
-
-        public List<GameSummary> games() {
-            return games;
-        }
     }
 
 }

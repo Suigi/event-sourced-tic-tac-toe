@@ -2,6 +2,7 @@ package ninja.ranner.xogame.adapter.in.web;
 
 import ninja.ranner.xogame.application.port.GameRepository;
 import ninja.ranner.xogame.application.port.InMemoryEventStore;
+import ninja.ranner.xogame.domain.AllGamesProjection;
 import ninja.ranner.xogame.domain.Game;
 import ninja.ranner.xogame.domain.GameId;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -34,8 +35,8 @@ class LobbyControllerTest {
         lobbyController.lobby(model);
 
         assertThat(model)
-                .extractingByKey("games", InstanceOfAssertFactories.list(LobbyController.GameSummary.class))
-                .extracting(LobbyController.GameSummary::name)
+                .extractingByKey("games", InstanceOfAssertFactories.list(AllGamesProjection.GameSummary.class))
+                .extracting(AllGamesProjection.GameSummary::name)
                 .containsExactly("Existing Game");
     }
 

@@ -1,5 +1,6 @@
 package ninja.ranner.xogame.adapter.in.web;
 
+import ninja.ranner.xogame.domain.AllGamesProjection;
 import ninja.ranner.xogame.domain.Cell;
 import ninja.ranner.xogame.domain.Game;
 import ninja.ranner.xogame.domain.GameId;
@@ -26,8 +27,8 @@ public class DebugController {
     @GetMapping("lobby")
     public String lobby(Model model) {
         model.addAttribute("games", List.of(
-                new LobbyController.GameSummary(UUID.randomUUID().toString(), "First Game"),
-                new LobbyController.GameSummary(UUID.randomUUID().toString(), "Second Game")
+                new AllGamesProjection.GameSummary(UUID.randomUUID().toString(), "First Game"),
+                new AllGamesProjection.GameSummary(UUID.randomUUID().toString(), "Second Game")
         ));
         return "lobby";
     }

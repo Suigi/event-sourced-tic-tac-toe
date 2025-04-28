@@ -1,4 +1,4 @@
-@import ninja.ranner.xogame.adapter.in.web.LobbyController.GameSummary
+@import ninja.ranner.xogame.domain.AllGamesProjection.GameSummary
 @import java.util.List
 @param List<GameSummary> games
 <!DOCTYPE html>
