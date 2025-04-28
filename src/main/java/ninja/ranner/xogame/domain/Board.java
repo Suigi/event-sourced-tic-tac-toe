@@ -25,21 +25,21 @@ public class Board {
 
     Optional<Player> determineWinner() {
         return winningArrangements.stream()
-                .map(this::determineWinner)
-                .gather(MyGatherers.filterPresent())
-                .findFirst();
+                                  .map(this::determineWinner)
+                                  .gather(MyGatherers.filterPresent())
+                                  .findFirst();
     }
 
     private Optional<Player> determineWinner(List<Cell> cells) {
         return cells.stream()
-                .map(board::get)
+                    .map(board::get)
 
-                // Make a grouping of player to number of cells filled by them
-                .gather(MyGatherers.count())
+                    // Make a grouping of player to number of cells filled by them
+                    .gather(MyGatherers.count())
 
-                // Find the first player who filled three cells
-                .collect(MyCollectors.findFirstBy(x -> x.getValue() == 3))
-                .map(Map.Entry::getKey);
+                    // Find the first player who filled three cells
+                    .collect(MyCollectors.findFirstBy(x -> x.getValue() == 3))
+                    .map(Map.Entry::getKey);
     }
 
     boolean isDraw() {
