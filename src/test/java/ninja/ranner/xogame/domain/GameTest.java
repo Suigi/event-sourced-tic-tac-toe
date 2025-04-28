@@ -20,6 +20,20 @@ class GameTest {
                     .containsExactly(new GameCreated("My game"));
         }
 
+        @Test
+        void fillingFirstCellEmitsCellFilledByX() {
+            Game game = Game.reconstitute(List.of(new GameCreated("IRRELEVANT GAME NAME")));
+
+            game.fillCell(Cell.at(0, 0));
+
+            assertThat(game.uncommittedEvents())
+                    .containsExactly(new CellFilled(Game.Player.X, Cell.at(0, 0)));
+        }
+
+        @Test
+        void fillingSecondCellEmitsCellFilledByO() {
+
+        }
     }
 
     @Nested
@@ -33,6 +47,24 @@ class GameTest {
                    .isEqualTo("The Game");
         }
 
+        @Test
+        void playerXHasTheFirstTurn() {
+            Game game = Game.create("Some Game");
+
+            assertThat(game.currentPlayer())
+                    .isEqualTo(Game.Player.X);
+        }
+
+        @Test
+        void playerOHasTheSecondTurn() {
+            Game game = Game.reconstitute(List.of(
+                    new GameCreated("Some Game"),
+                    new CellFilled(Game.Player.X, Cell.at(1, 1))
+            ));
+
+            assertThat(game.currentPlayer())
+                    .isEqualTo(Game.Player.O);
+        }
     }
 
 }
