@@ -248,6 +248,7 @@ class GameTest {
             assertThat(game.result())
                     .isEqualTo(GameResult.DRAW);
         }
+
     }
 
     private GameCreated gameCreated() {
