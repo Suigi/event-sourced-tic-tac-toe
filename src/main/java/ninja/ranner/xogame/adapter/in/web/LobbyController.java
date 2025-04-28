@@ -1,14 +1,10 @@
 package ninja.ranner.xogame.adapter.in.web;
 
+import ninja.ranner.xogame.application.AllGamesProjection;
 import ninja.ranner.xogame.application.port.EventStore;
-import ninja.ranner.xogame.domain.AllGamesProjection;
-import ninja.ranner.xogame.domain.Event;
-import ninja.ranner.xogame.domain.GameCreated;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import java.util.List;
 
 @Controller
 public class LobbyController {
@@ -21,9 +17,7 @@ public class LobbyController {
 
     @GetMapping("/")
     public String lobby(Model model) {
-        List<Event> events = eventStore.findAllForType(GameCreated.class);
-        AllGamesProjection allGames = new AllGamesProjection();
-        events.forEach(allGames::apply);
+        AllGamesProjection allGames = AllGamesProjection.onDemand(eventStore);
 
         model.addAttribute("games", allGames.games());
         return "lobby";

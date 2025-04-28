@@ -1,4 +1,4 @@
-@import ninja.ranner.xogame.domain.AllGamesProjection.GameSummary
+@import ninja.ranner.xogame.application.AllGamesProjection.GameSummary
 @import java.util.List
 @param List<GameSummary> games
 <!DOCTYPE html>
@@ -30,14 +30,16 @@
         <input type="submit" value="Create">
     </form>
 </section>
-<section>
-    <h3>Existing Games</h3>
-    <ul>
-        @for(GameSummary game : games)
-            <li><a href="games/${game.gameId()}">${game.name()}</a></li>
-        @endfor
-    </ul>
-</section>
+@if(!games.isEmpty())
+    <section>
+        <h3>Open Games</h3>
+        <ul>
+            @for(GameSummary game : games)
+                <li><a href="games/${game.id().uuid().toString()}">${game.name()}</a></li>
+            @endfor
+        </ul>
+    </section>
+@endif
 </body>
 
 </html>

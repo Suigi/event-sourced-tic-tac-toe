@@ -1,6 +1,6 @@
 package ninja.ranner.xogame.adapter.in.web;
 
-import ninja.ranner.xogame.domain.AllGamesProjection;
+import ninja.ranner.xogame.application.AllGamesProjection;
 import ninja.ranner.xogame.domain.Cell;
 import ninja.ranner.xogame.domain.Game;
 import ninja.ranner.xogame.domain.GameId;
@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/debug/")
@@ -27,8 +26,8 @@ public class DebugController {
     @GetMapping("lobby")
     public String lobby(Model model) {
         model.addAttribute("games", List.of(
-                new AllGamesProjection.GameSummary(UUID.randomUUID().toString(), "First Game"),
-                new AllGamesProjection.GameSummary(UUID.randomUUID().toString(), "Second Game")
+                new AllGamesProjection.GameSummary(GameId.random(), "First Game"),
+                new AllGamesProjection.GameSummary(GameId.random(), "Second Game")
         ));
         return "lobby";
     }
