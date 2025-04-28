@@ -6,6 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Game</title>
+    <!--suppress CssUnusedSymbol -->
     <style>
         .board {
             width: fit-content;
