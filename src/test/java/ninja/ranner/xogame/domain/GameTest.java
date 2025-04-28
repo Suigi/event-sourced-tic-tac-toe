@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -15,10 +16,11 @@ class GameTest {
 
         @Test
         void creatingGameEmitsGameCreated() {
-            Game game = Game.create("My game");
+            GameId gameId = GameId.of(UUID.fromString("019671ab-efcd-7991-899e-07694ad51bd5"));
+            Game game = Game.create(gameId, "My game");
 
             assertThat(game.uncommittedEvents())
-                    .containsExactly(new GameCreated("My game"));
+                    .containsExactly(new GameCreated(gameId, "My game"));
         }
 
         @Test
@@ -118,7 +120,8 @@ class GameTest {
 
         @Test
         void gameCreatedContainsGameName() {
-            Game game = Game.reconstitute(List.of(new GameCreated("The Game")));
+            Game game = Game.reconstitute(List.of(
+                    new GameCreated(GameId.random(), "The Game")));
 
             assertThat(game.name())
                     .isEqualTo("The Game");
@@ -252,7 +255,7 @@ class GameTest {
     }
 
     private GameCreated gameCreated() {
-        return new GameCreated("IRRELEVANT GAME NAME");
+        return new GameCreated(GameId.random(), "IRRELEVANT GAME NAME");
     }
 
     private CellFilled xFilledCell(int x, int y) {

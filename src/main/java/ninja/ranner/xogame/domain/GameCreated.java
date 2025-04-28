@@ -1,3 +1,3 @@
 package ninja.ranner.xogame.domain;
 
-public record GameCreated(String newGameName) implements Event {}
+public record GameCreated(GameId gameId, String newGameName) implements Event {}

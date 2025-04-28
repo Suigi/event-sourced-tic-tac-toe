@@ -13,9 +13,9 @@ public class Game extends EventSourcedAggregate {
 
     // Commands
 
-    public static Game create(String name) {
+    public static Game create(GameId gameId, String name) {
         Game game = new Game();
-        game.emit(new GameCreated(name));
+        game.emit(new GameCreated(gameId, name));
         return game;
     }
 
@@ -75,7 +75,7 @@ public class Game extends EventSourcedAggregate {
     @Override
     protected void apply(Event event) {
         switch (event) {
-            case GameCreated(String newGameName) -> this.name = newGameName;
+            case GameCreated(GameId gameId, String newGameName) -> this.name = newGameName;
             case CellFilled(Player player, Cell cell) -> {
                 this.currentPlayer = player == Player.X ? Player.O : Player.X;
                 board.fill(player, cell);
