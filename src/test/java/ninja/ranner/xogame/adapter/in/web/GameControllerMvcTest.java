@@ -1,6 +1,7 @@
 package ninja.ranner.xogame.adapter.in.web;
 
 import ninja.ranner.xogame.InMemoryStoresTestConfiguration;
+import ninja.ranner.xogame.application.port.InMemoryEventStore;
 import ninja.ranner.xogame.application.port.InMemoryGameRepository;
 import ninja.ranner.xogame.domain.Game;
 import ninja.ranner.xogame.domain.GameId;
@@ -30,9 +31,12 @@ class GameControllerMvcTest {
     @Autowired
     private InMemoryGameRepository gameRepository;
 
+    @Autowired
+    private InMemoryEventStore eventStore;
+
     @BeforeEach
     void setUp() {
-        gameRepository.clear();
+        eventStore.clear();
     }
 
     @Test

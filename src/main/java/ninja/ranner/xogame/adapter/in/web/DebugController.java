@@ -19,4 +19,9 @@ public class DebugController {
         model.addAttribute("game", GameController.GameView.from(game));
         return "game";
     }
+
+    @GetMapping("lobby")
+    public String lobby() {
+        return "lobby";
+    }
 }

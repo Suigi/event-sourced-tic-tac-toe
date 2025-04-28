@@ -12,7 +12,7 @@ class InMemoryGameRepositoryTest {
 
     @Test
     void savedGameCanBeFound() {
-        InMemoryGameRepository inMemoryGameRepository = new InMemoryGameRepository();
+        InMemoryGameRepository inMemoryGameRepository = new InMemoryGameRepository(new InMemoryEventStore());
         GameId gameId = GameId.random();
         Game game = Game.create(gameId, "Game to save");
 
@@ -26,7 +26,7 @@ class InMemoryGameRepositoryTest {
 
     @Test
     void retrievedGameCanSaveUpdates() {
-        InMemoryGameRepository inMemoryGameRepository = new InMemoryGameRepository();
+        InMemoryGameRepository inMemoryGameRepository = new InMemoryGameRepository(new InMemoryEventStore());
         GameId gameId = GameId.random();
         Game game = Game.create(gameId, "Game to save");
         inMemoryGameRepository.save(game);
@@ -41,4 +41,5 @@ class InMemoryGameRepositoryTest {
         assertThat(updatedAndFoundGame.boardMap().get(Cell.at(1, 1)))
                 .isEqualTo(Player.X);
     }
+
 }

@@ -1,6 +1,8 @@
 package ninja.ranner.xogame.spring;
 
+import ninja.ranner.xogame.application.port.EventStore;
 import ninja.ranner.xogame.application.port.GameRepository;
+import ninja.ranner.xogame.application.port.InMemoryEventStore;
 import ninja.ranner.xogame.application.port.InMemoryGameRepository;
 import ninja.ranner.xogame.domain.Cell;
 import ninja.ranner.xogame.domain.Game;
@@ -15,10 +17,14 @@ import java.util.UUID;
 public class XoGameConfiguration {
 
     @Bean
-    GameRepository gameRepository() {
-        return new InMemoryGameRepository();
+    GameRepository gameRepository(EventStore eventStore) {
+        return new InMemoryGameRepository(eventStore);
     }
 
+    @Bean
+    EventStore eventStore() {
+        return new InMemoryEventStore();
+    }
 
     @Bean
     ApplicationRunner initializeGame(GameRepository gameRepository) {

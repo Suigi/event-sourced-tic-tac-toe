@@ -4,28 +4,29 @@ import ninja.ranner.xogame.domain.Event;
 import ninja.ranner.xogame.domain.Game;
 import ninja.ranner.xogame.domain.GameId;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 public class InMemoryGameRepository implements GameRepository {
 
-    private final Map<GameId, List<Event>> store = new HashMap<>();
+    private final EventStore eventStore;
+
+    public InMemoryGameRepository(EventStore eventStore) {
+        this.eventStore = eventStore;
+    }
 
     @Override
     public Game save(Game game) {
-        store.computeIfAbsent(game.id(), (_) -> new ArrayList<>())
-             .addAll(game.uncommittedEvents().toList());
+        List<Event> events = game.uncommittedEvents().toList();
+        GameId id = game.id();
+        eventStore.append(id, events);
 
         return findById(game.id()).orElseThrow();
     }
 
     @Override
     public Optional<Game> findById(GameId gameId) {
-        return Optional
-                .ofNullable(store.get(gameId))
-                .map(Game::reconstitute);
+        return eventStore.findAllForId(gameId).map(Game::reconstitute);
     }
 
-    public void clear() {
-        store.clear();
-    }
 }
