@@ -113,8 +113,15 @@ class GameTest {
                     .isExactlyInstanceOf(CellAlreadyFilled.class)
                     .hasMessage("Cell(1,2) is already filled by X");
         }
-    }
 
+        @Test
+        void fillingACellWhenGameIsFinishedThrowsException() {
+            Game game = GameFactory.createGameWonByX();
+
+            assertThatThrownBy(() -> game.fillCell(Cell.at(1, 1)))
+                    .isExactlyInstanceOf(GameAlreadyOver.class);
+        }
+    }
 
     @Nested
     public class EventsProjectState {

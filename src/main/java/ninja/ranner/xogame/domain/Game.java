@@ -1,6 +1,7 @@
 package ninja.ranner.xogame.domain;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public class Game extends EventSourcedAggregate {
     private final Board board = new Board();
@@ -21,11 +22,18 @@ public class Game extends EventSourcedAggregate {
     }
 
     public void fillCell(Cell cell) {
+        ensureGameIsInProgress();
         ensureFreeCell(cell);
 
         emit(new CellFilled(currentPlayer, cell));
 
         determineGameFinished();
+    }
+
+    private void ensureGameIsInProgress() {
+        if (gameResult != GameResult.GAME_IN_PROGRESS) {
+            throw new GameAlreadyOver();
+        }
     }
 
     private void ensureFreeCell(Cell cell) {

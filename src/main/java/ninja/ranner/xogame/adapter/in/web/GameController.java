@@ -56,12 +56,19 @@ public class GameController {
                           .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    public record GameView(String gameId, String name, String result, Map<Cell, Player> cells) {
+    public record GameView(
+            String gameId,
+            String name,
+            String result,
+            boolean isOver,
+            Map<Cell, Player> cells
+    ) {
         public static GameView from(Game game) {
             return new GameView(
                     game.id().uuid().toString(),
                     game.name(),
                     mapResult(game.result()),
+                    game.result() != GameResult.GAME_IN_PROGRESS,
                     game.boardMap()
             );
         }
@@ -92,5 +99,11 @@ public class GameController {
                     .orElse("cell");
         }
 
+        public boolean canPlayCell(int x, int y) {
+            if (isOver) {
+                return false;
+            }
+            return cells.get(Cell.at(x, y)) == null;
+        }
     }
 }

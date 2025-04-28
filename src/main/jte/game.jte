@@ -28,6 +28,7 @@
             border: 2px solid darkblue;
             gap: 1px;
             background-color: gray;
+            margin-bottom: 20px;
         }
 
         #board .cell {
@@ -38,6 +39,10 @@
             box-sizing: border-box;
             background: white;
             font-weight: bold;
+        }
+
+        #board .cell:disabled {
+            cursor: not-allowed;
         }
 
         #board .player-x {

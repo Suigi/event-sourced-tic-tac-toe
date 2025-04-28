@@ -11,6 +11,7 @@
                     hx-trigger="click"
                     hx-target="#board"
                     hx-swap="outerHTML"
+                    disabled="${!game.canPlayCell(x,y)}"
             >
                 ${game.cellAt(x,y)}
             </button>
