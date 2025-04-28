@@ -1,7 +1,7 @@
 package ninja.ranner.xogame.adapter.in.web;
 
+import ninja.ranner.xogame.application.port.GameRepository;
 import ninja.ranner.xogame.application.port.InMemoryEventStore;
-import ninja.ranner.xogame.application.port.InMemoryGameRepository;
 import ninja.ranner.xogame.domain.Game;
 import ninja.ranner.xogame.domain.GameId;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -26,8 +26,8 @@ class LobbyControllerTest {
     void existingGameIsDisplayedInLobby() {
         Game game = Game.create(GameId.random(), "Existing Game");
         InMemoryEventStore eventStore = new InMemoryEventStore();
-        InMemoryGameRepository inMemoryGameRepository = new InMemoryGameRepository(eventStore);
-        inMemoryGameRepository.save(game);
+        GameRepository gameRepository = new GameRepository(eventStore);
+        gameRepository.save(game);
         LobbyController lobbyController = new LobbyController(eventStore);
 
         ConcurrentModel model = new ConcurrentModel();

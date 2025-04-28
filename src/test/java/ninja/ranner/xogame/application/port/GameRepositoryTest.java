@@ -8,17 +8,17 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class InMemoryGameRepositoryTest {
+class GameRepositoryTest {
 
     @Test
     void savedGameCanBeFound() {
-        InMemoryGameRepository inMemoryGameRepository = new InMemoryGameRepository(new InMemoryEventStore());
+        GameRepository gameRepository = new GameRepository(new InMemoryEventStore());
         GameId gameId = GameId.random();
         Game game = Game.create(gameId, "Game to save");
 
-        inMemoryGameRepository.save(game);
+        gameRepository.save(game);
 
-        assertThat(inMemoryGameRepository.findById(gameId))
+        assertThat(gameRepository.findById(gameId))
                 .get()
                 .extracting(Game::name)
                 .isEqualTo("Game to save");
@@ -26,16 +26,16 @@ class InMemoryGameRepositoryTest {
 
     @Test
     void retrievedGameCanSaveUpdates() {
-        InMemoryGameRepository inMemoryGameRepository = new InMemoryGameRepository(new InMemoryEventStore());
+        GameRepository gameRepository = new GameRepository(new InMemoryEventStore());
         GameId gameId = GameId.random();
         Game game = Game.create(gameId, "Game to save");
-        inMemoryGameRepository.save(game);
+        gameRepository.save(game);
 
-        Game foundGame = inMemoryGameRepository.findById(gameId).orElseThrow();
+        Game foundGame = gameRepository.findById(gameId).orElseThrow();
         foundGame.fillCell(Cell.at(1, 1));
-        inMemoryGameRepository.save(foundGame);
+        gameRepository.save(foundGame);
 
-        Game updatedAndFoundGame = inMemoryGameRepository.findById(gameId).orElseThrow();
+        Game updatedAndFoundGame = gameRepository.findById(gameId).orElseThrow();
         assertThat(updatedAndFoundGame.name())
                 .isEqualTo("Game to save");
         assertThat(updatedAndFoundGame.boardMap().get(Cell.at(1, 1)))

@@ -2,7 +2,6 @@ package ninja.ranner.xogame.adapter.in.web;
 
 import ninja.ranner.xogame.application.port.GameRepository;
 import ninja.ranner.xogame.application.port.InMemoryEventStore;
-import ninja.ranner.xogame.application.port.InMemoryGameRepository;
 import ninja.ranner.xogame.domain.Cell;
 import ninja.ranner.xogame.domain.Game;
 import ninja.ranner.xogame.domain.GameFactory;
@@ -23,7 +22,7 @@ class GameControllerTest {
 
     @Test
     void loadsGameFromRepository() {
-        GameRepository gameRepository = new InMemoryGameRepository(new InMemoryEventStore());
+        GameRepository gameRepository = new GameRepository(new InMemoryEventStore());
         GameController gameController = new GameController(gameRepository);
         GameId gameId = GameId.random();
         gameRepository.save(Game.create(gameId, "Game Name"));
@@ -39,7 +38,7 @@ class GameControllerTest {
 
     @Test
     void fill_fillsCell() {
-        GameRepository gameRepository = new InMemoryGameRepository(new InMemoryEventStore());
+        GameRepository gameRepository = new GameRepository(new InMemoryEventStore());
         GameController gameController = new GameController(gameRepository);
         GameId gameId = GameId.random();
         gameRepository.save(Game.create(gameId, "Game Name"));

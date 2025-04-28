@@ -1,8 +1,8 @@
 package ninja.ranner.xogame.adapter.in.web;
 
 import ninja.ranner.xogame.InMemoryStoresTestConfiguration;
+import ninja.ranner.xogame.application.port.GameRepository;
 import ninja.ranner.xogame.application.port.InMemoryEventStore;
-import ninja.ranner.xogame.application.port.InMemoryGameRepository;
 import ninja.ranner.xogame.domain.Game;
 import ninja.ranner.xogame.domain.GameId;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +29,7 @@ class GameControllerMvcTest {
     private MockMvcTester mvcTester;
 
     @Autowired
-    private InMemoryGameRepository gameRepository;
+    private GameRepository gameRepository;
 
     @Autowired
     private InMemoryEventStore eventStore;
