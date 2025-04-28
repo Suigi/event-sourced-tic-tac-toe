@@ -1,7 +1,9 @@
 package ninja.ranner.xogame.domain;
 
+import ninja.ranner.xogame.util.stream.MyCollectors;
+import ninja.ranner.xogame.util.stream.MyGatherers;
+
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Board {
     static final List<List<Cell>> winningArrangements = List.of(
@@ -21,33 +23,27 @@ public class Board {
 
     // Queries
 
-    boolean isDraw() {
-        return board.size() == 9;
-    }
-
     Optional<Player> determineWinner() {
         return winningArrangements.stream()
                 .map(this::determineWinner)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .gather(MyGatherers.filterPresent())
                 .findFirst();
     }
 
     private Optional<Player> determineWinner(List<Cell> cells) {
         return cells.stream()
-
-                // Map the cells to who filled them, and filter out any unfilled cells
                 .map(board::get)
-                .filter(Objects::nonNull)
 
-                // Make a grouping of player to number cells filled by them
-                .collect(Collectors.groupingBy(x -> x, Collectors.counting()))
-                .entrySet().stream()
+                // Make a grouping of player to number of cells filled by them
+                .gather(MyGatherers.count())
 
                 // Find the first player who filled three cells
-                .filter((entry) -> entry.getValue() == 3)
-                .map(Map.Entry::getKey)
-                .findFirst();
+                .collect(MyCollectors.findFirstBy(x -> x.getValue() == 3))
+                .map(Map.Entry::getKey);
+    }
+
+    boolean isDraw() {
+        return board.size() == 9;
     }
 
     public Map<Cell, Player> asMap() {
@@ -59,4 +55,5 @@ public class Board {
     void fill(Player player, Cell cell) {
         board.put(cell, player);
     }
+
 }
