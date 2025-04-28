@@ -16,15 +16,15 @@ class GameControllerTest {
     void loadsGameFromRepository() {
         GameRepository gameRepository = new InMemoryGameRepository();
         GameController gameController = new GameController(gameRepository);
-        ConcurrentModel model = new ConcurrentModel();
         GameId gameId = GameId.random();
-        Game game = Game.create(gameId, "Game Name");
-        gameRepository.save(game);
+        gameRepository.save(Game.create(gameId, "Game Name"));
 
+        ConcurrentModel model = new ConcurrentModel();
         gameController.game(gameId.id().toString(), model);
 
         assertThat(model)
                 .extracting("game", InstanceOfAssertFactories.type(GameController.GameView.class))
                 .isEqualTo(new GameController.GameView("Game Name"));
     }
+
 }
