@@ -26,7 +26,7 @@
     <h3>Create New Game</h3>
     <form action="/games" method="post">
         <label for="gameName">New Game Name:</label>
-        <input type="text" id="gameName" placeholder="Game Name">
+        <input type="text" id="gameName" name="gameName" placeholder="Game Name">
         <input type="submit" value="Create">
     </form>
 </section>
