@@ -28,7 +28,8 @@ class GameControllerMvcTest {
 
         assertThat(result)
                 .hasStatusOk()
-                .hasViewName("game");
+                .hasViewName("game")
+                .model().containsKey("game");
     }
 
 }
