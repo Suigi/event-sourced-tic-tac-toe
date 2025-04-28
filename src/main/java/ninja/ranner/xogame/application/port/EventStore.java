@@ -1,7 +1,6 @@
 package ninja.ranner.xogame.application.port;
 
 import ninja.ranner.xogame.domain.Event;
-import ninja.ranner.xogame.domain.GameCreated;
 import ninja.ranner.xogame.domain.Identifier;
 
 import java.util.List;
@@ -12,5 +11,5 @@ public interface EventStore {
 
     Optional<List<Event>> findAllForId(Identifier gameId);
 
-    List<Event> findAllForType(Class<GameCreated> gameCreatedClass);
+    List<Event> findAllForTypes(List<Class<? extends Event>> gameCreatedClass);
 }

@@ -11,8 +11,9 @@ public class GameFactory {
         // | O O X |
         // | X X O |
         // +-------+
+        GameId gameId = GameId.random();
         return ninja.ranner.xogame.domain.Game.reconstitute(List.of(
-                Events.gameCreated(),
+                new GameCreated(gameId, "Drawn Game"),
                 Events.xFilledCell(0, 0),
                 Events.oFilledCell(1, 1),
                 Events.xFilledCell(2, 0),
@@ -22,7 +23,7 @@ public class GameFactory {
                 Events.xFilledCell(2, 1),
                 Events.oFilledCell(2, 2),
                 Events.xFilledCell(0, 2),
-                new GameDrawn()
+                new GameDrawn(gameId)
         ));
     }
 
@@ -33,14 +34,15 @@ public class GameFactory {
         // | X . O |
         // | X . . |
         // +-------+
+        GameCreated gameCreated = Events.gameCreated();
         return ninja.ranner.xogame.domain.Game.reconstitute(List.of(
-                Events.gameCreated(),
+                gameCreated,
                 Events.xFilledCell(0, 0),
                 Events.oFilledCell(0, 2),
                 Events.xFilledCell(1, 0),
                 Events.oFilledCell(1, 2),
                 Events.xFilledCell(2, 0),
-                new GameWon(Player.X)
+                new GameWon(gameCreated.gameId(), Player.X)
         ));
     }
 
@@ -51,15 +53,16 @@ public class GameFactory {
         // | X X O |
         // | . . O |
         // +-------+
+        GameCreated gameCreated = Events.gameCreated();
         return Game.reconstitute(List.of(
-                Events.gameCreated(),
+                gameCreated,
                 Events.xFilledCell(0, 0),
                 Events.oFilledCell(0, 2),
                 Events.xFilledCell(1, 0),
                 Events.oFilledCell(1, 2),
                 Events.xFilledCell(1, 1),
                 Events.oFilledCell(2, 2),
-                new GameWon(Player.O)
+                new GameWon(gameCreated.gameId(), Player.O)
         ));
     }
 

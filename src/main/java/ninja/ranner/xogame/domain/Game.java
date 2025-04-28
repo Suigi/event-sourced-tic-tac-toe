@@ -44,14 +44,14 @@ public class Game extends EventSourcedAggregate {
     private void determineGameFinished() {
         board.determineWinner()
              .ifPresentOrElse(
-                     winner -> emit(new GameWon(winner)),
+                     winner -> emit(new GameWon(gameId, winner)),
                      this::determineDraw
              );
     }
 
     private void determineDraw() {
         if (board.isDraw()) {
-            emit(new GameDrawn());
+            emit(new GameDrawn(gameId));
         }
     }
 
@@ -96,10 +96,10 @@ public class Game extends EventSourcedAggregate {
                 this.currentPlayer = player == Player.X ? Player.O : Player.X;
                 board.fill(player, cell);
             }
-            case GameWon(Player winner) -> gameResult = winner == Player.X
+            case GameWon(_, Player winner) -> gameResult = winner == Player.X
                     ? GameResult.PLAYER_X_WINS
                     : GameResult.PLAYER_O_WINS;
-            case GameDrawn() -> gameResult = GameResult.DRAW;
+            case GameDrawn(_) -> gameResult = GameResult.DRAW;
             default -> {}
         }
     }

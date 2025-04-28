@@ -1,4 +1,4 @@
-@import ninja.ranner.xogame.application.AllGamesProjection.GameSummary
+@import ninja.ranner.xogame.application.OpenGamesProjection.GameSummary
 @import java.util.List
 @param List<GameSummary> games
 <!DOCTYPE html>

@@ -1,6 +1,6 @@
 package ninja.ranner.xogame.adapter.in.web;
 
-import ninja.ranner.xogame.application.AllGamesProjection;
+import ninja.ranner.xogame.application.OpenGamesProjection;
 import ninja.ranner.xogame.application.port.GameRepository;
 import ninja.ranner.xogame.application.port.InMemoryEventStore;
 import ninja.ranner.xogame.domain.Game;
@@ -35,8 +35,8 @@ class LobbyControllerTest {
         lobbyController.lobby(model);
 
         assertThat(model)
-                .extractingByKey("games", InstanceOfAssertFactories.list(AllGamesProjection.GameSummary.class))
-                .extracting(AllGamesProjection.GameSummary::name)
+                .extractingByKey("games", InstanceOfAssertFactories.list(OpenGamesProjection.GameSummary.class))
+                .extracting(OpenGamesProjection.GameSummary::name)
                 .containsExactly("Existing Game");
     }
 

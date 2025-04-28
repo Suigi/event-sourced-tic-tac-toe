@@ -68,7 +68,7 @@ class GameTest {
             assertThat(game.uncommittedEvents())
                     .containsExactly(
                             new CellFilled(Player.X, Cell.at(2, 0)),
-                            new GameWon(Player.X));
+                            new GameWon(game.id(), Player.X));
         }
 
         @Test
@@ -96,7 +96,7 @@ class GameTest {
             assertThat(game.uncommittedEvents())
                     .containsExactly(
                             new CellFilled(Player.X, Cell.at(0, 2)),
-                            new GameDrawn());
+                            new GameDrawn(game.id()));
         }
     }
 

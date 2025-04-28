@@ -1,3 +1,3 @@
 package ninja.ranner.xogame.domain;
 
-public record GameWon(Player player) implements Event {}
+public record GameWon(GameId gameId, Player player) implements Event {}

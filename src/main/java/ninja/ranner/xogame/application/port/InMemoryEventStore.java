@@ -1,7 +1,6 @@
 package ninja.ranner.xogame.application.port;
 
 import ninja.ranner.xogame.domain.Event;
-import ninja.ranner.xogame.domain.GameCreated;
 import ninja.ranner.xogame.domain.Identifier;
 
 import java.util.*;
@@ -27,9 +26,9 @@ public class InMemoryEventStore implements EventStore {
     }
 
     @Override
-    public List<Event> findAllForType(Class<GameCreated> gameCreatedClass) {
+    public final List<Event> findAllForTypes(List<Class<? extends Event>> eventClasses) {
         return allEvents.stream()
-                        .filter(event -> event.getClass().equals(gameCreatedClass))
+                        .filter(event -> eventClasses.contains(event.getClass()))
                         .toList();
     }
 
