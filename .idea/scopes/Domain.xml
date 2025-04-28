@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Domain" pattern="ninja.ranner.xogame.domain..*" />
+</component>
