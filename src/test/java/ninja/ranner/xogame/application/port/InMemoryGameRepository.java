@@ -15,12 +15,18 @@ public class InMemoryGameRepository implements GameRepository {
 
     @Override
     public Game save(Game game) {
-         store.put(game.id(), game.uncommittedEvents().toList());
-         return findById(game.id()).orElseThrow();
+        store.put(game.id(), game.uncommittedEvents().toList());
+        return findById(game.id()).orElseThrow();
     }
 
     @Override
     public Optional<Game> findById(GameId gameId) {
-        return Optional.of(Game.reconstitute(store.get(gameId)));
+        return Optional
+                .ofNullable(store.get(gameId))
+                .map(Game::reconstitute);
+    }
+
+    public void clear() {
+        store.clear();
     }
 }
