@@ -5,7 +5,6 @@ import ninja.ranner.xogame.application.port.InMemoryGameRepository;
 import ninja.ranner.xogame.domain.Game;
 import ninja.ranner.xogame.domain.GameId;
 import org.assertj.core.api.InstanceOfAssertFactories;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.ConcurrentModel;
 
@@ -16,13 +15,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GameControllerTest {
 
     @Test
-    @Disabled
     void loadsGameFromRepository() {
         String gameIdString = UUID.randomUUID().toString();
-        GameController gameController = new GameController();
+        GameRepository gameRepository = new InMemoryGameRepository();
+        GameController gameController = new GameController(gameRepository);
         ConcurrentModel model = new ConcurrentModel();
         Game game = Game.create(GameId.random(), "Game Name");
-        GameRepository gameRepository = new InMemoryGameRepository();
         gameRepository.save(game);
 
         gameController.game(gameIdString, model);

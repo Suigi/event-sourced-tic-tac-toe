@@ -5,7 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
-@Import(TestcontainersConfiguration.class)
+@Import({
+        TestcontainersConfiguration.class,
+//        InMemoryStoresTestConfiguration.class
+})
 @SpringBootTest
 @Tag("spring")
 class XoGameApplicationTests {
