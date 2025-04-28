@@ -32,7 +32,15 @@ class GameTest {
 
         @Test
         void fillingSecondCellEmitsCellFilledByO() {
+            Game game = Game.reconstitute(List.of(
+                    new GameCreated("IRRELEVANT GAME NAME"),
+                    new CellFilled(Game.Player.X, Cell.at(0, 0))
+            ));
 
+            game.fillCell(Cell.at(2, 2));
+
+            assertThat(game.uncommittedEvents())
+                    .containsExactly(new CellFilled(Game.Player.O, Cell.at(2, 2)));
         }
     }
 

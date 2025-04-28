@@ -22,7 +22,7 @@ public class Game extends EventSourcedAggregate {
     }
 
     public void fillCell(Cell cell) {
-        emit(new CellFilled(Player.X, cell));
+        emit(new CellFilled(currentPlayer, cell));
     }
 
     // Queries
