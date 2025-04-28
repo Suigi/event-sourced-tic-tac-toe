@@ -28,20 +28,20 @@ class GameTest {
             game.fillCell(Cell.at(0, 0));
 
             assertThat(game.uncommittedEvents())
-                    .containsExactly(new CellFilled(Game.Player.X, Cell.at(0, 0)));
+                    .containsExactly(new CellFilled(Player.X, Cell.at(0, 0)));
         }
 
         @Test
         void fillingSecondCellEmitsCellFilledByO() {
             Game game = Game.reconstitute(List.of(
                     gameCreated(),
-                    new CellFilled(Game.Player.X, Cell.at(0, 0))
+                    new CellFilled(Player.X, Cell.at(0, 0))
             ));
 
             game.fillCell(Cell.at(2, 2));
 
             assertThat(game.uncommittedEvents())
-                    .containsExactly(new CellFilled(Game.Player.O, Cell.at(2, 2)));
+                    .containsExactly(new CellFilled(Player.O, Cell.at(2, 2)));
         }
 
         @Test
@@ -64,8 +64,8 @@ class GameTest {
 
             assertThat(game.uncommittedEvents())
                     .containsExactly(
-                            new CellFilled(Game.Player.X, Cell.at(2, 0)),
-                            new GameWon(Game.Player.X));
+                            new CellFilled(Player.X, Cell.at(2, 0)),
+                            new GameWon(Player.X));
         }
 
         @Test
@@ -92,7 +92,7 @@ class GameTest {
 
             assertThat(game.uncommittedEvents())
                     .containsExactly(
-                            new CellFilled(Game.Player.X, Cell.at(0, 2)),
+                            new CellFilled(Player.X, Cell.at(0, 2)),
                             new GameDrawn());
         }
     }
@@ -121,25 +121,25 @@ class GameTest {
             Game game = Game.reconstitute(List.of(gameCreated()));
 
             assertThat(game.currentPlayer())
-                    .isEqualTo(Game.Player.X);
+                    .isEqualTo(Player.X);
         }
 
         @Test
         void playerOHasTheSecondTurn() {
             Game game = Game.reconstitute(List.of(
                     gameCreated(),
-                    new CellFilled(Game.Player.X, Cell.at(1, 1))
+                    new CellFilled(Player.X, Cell.at(1, 1))
             ));
 
             assertThat(game.currentPlayer())
-                    .isEqualTo(Game.Player.O);
+                    .isEqualTo(Player.O);
         }
 
         @Test
         void newGameBoardIsAllEmpty() {
             Game game = Game.reconstitute(List.of(gameCreated()));
 
-            assertThat(game.board())
+            assertThat(game.boardMap())
                     .isEmpty();
         }
 
@@ -153,12 +153,12 @@ class GameTest {
                     oFilledCell(2, 0)
             ));
 
-            assertThat(game.board())
+            assertThat(game.boardMap())
                     .containsExactlyInAnyOrderEntriesOf(Map.of(
-                            Cell.at(0, 0), Game.Player.X,
-                            Cell.at(1, 1), Game.Player.O,
-                            Cell.at(2, 2), Game.Player.X,
-                            Cell.at(2, 0), Game.Player.O
+                            Cell.at(0, 0), Player.X,
+                            Cell.at(1, 1), Player.O,
+                            Cell.at(2, 2), Player.X,
+                            Cell.at(2, 0), Player.O
                     ));
         }
 
@@ -177,7 +177,7 @@ class GameTest {
                     xFilledCell(1, 0),
                     oFilledCell(1, 2),
                     xFilledCell(2, 0),
-                    new GameWon(Game.Player.X)
+                    new GameWon(Player.X)
             ));
 
             assertThat(game.result())
@@ -200,7 +200,7 @@ class GameTest {
                     oFilledCell(1, 2),
                     xFilledCell(1, 1),
                     oFilledCell(2, 2),
-                    new GameWon(Game.Player.O)
+                    new GameWon(Player.O)
             ));
 
             assertThat(game.result())
@@ -239,11 +239,11 @@ class GameTest {
     }
 
     private CellFilled xFilledCell(int x, int y) {
-        return new CellFilled(Game.Player.X, Cell.at(x, y));
+        return new CellFilled(Player.X, Cell.at(x, y));
     }
 
     private CellFilled oFilledCell(int x, int y) {
-        return new CellFilled(Game.Player.O, Cell.at(x, y));
+        return new CellFilled(Player.O, Cell.at(x, y));
     }
 
 }

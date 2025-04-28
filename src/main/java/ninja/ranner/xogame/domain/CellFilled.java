@@ -1,3 +1,3 @@
 package ninja.ranner.xogame.domain;
 
-public record CellFilled(Game.Player player, Cell cell) implements Event {}
+public record CellFilled(Player player, Cell cell) implements Event {}
