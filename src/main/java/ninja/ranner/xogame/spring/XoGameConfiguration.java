@@ -1,6 +1,7 @@
 package ninja.ranner.xogame.spring;
 
 import ninja.ranner.xogame.application.port.EventStore;
+import ninja.ranner.xogame.application.port.GameIdGenerator;
 import ninja.ranner.xogame.application.port.GameRepository;
 import ninja.ranner.xogame.application.port.InMemoryEventStore;
 import ninja.ranner.xogame.domain.Cell;
@@ -23,6 +24,11 @@ public class XoGameConfiguration {
     @Bean
     EventStore eventStore() {
         return new InMemoryEventStore();
+    }
+
+    @Bean
+    GameIdGenerator gameIdGenerator() {
+        return GameId::random;
     }
 
     @Bean

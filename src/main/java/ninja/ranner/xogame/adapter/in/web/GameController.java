@@ -1,6 +1,7 @@
 package ninja.ranner.xogame.adapter.in.web;
 
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
+import ninja.ranner.xogame.application.port.GameIdGenerator;
 import ninja.ranner.xogame.application.port.GameRepository;
 import ninja.ranner.xogame.domain.*;
 import org.springframework.http.HttpStatus;
@@ -13,16 +14,19 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.*;
 
 @Controller
-@RequestMapping("/games/")
+@RequestMapping("/games")
 public class GameController {
 
     private final GameRepository gameRepository;
+    private final GameIdGenerator gameIdGenerator;
 
-    public GameController(GameRepository gameRepository) {
+    public GameController(GameRepository gameRepository,
+                          GameIdGenerator gameIdGenerator) {
         this.gameRepository = gameRepository;
+        this.gameIdGenerator = gameIdGenerator;
     }
 
-    @GetMapping("{gameId}")
+    @GetMapping("/{gameId}")
     public String game(
             @PathVariable("gameId") String gameIdString,
             Model model) {
@@ -45,6 +49,15 @@ public class GameController {
                         "game", GameView.from(savedGame),
                         "isHtmx", true))
         );
+    }
+
+    @PostMapping()
+    public String createGame(@RequestParam("gameName") String name) {
+        Game game = Game.create(gameIdGenerator.generate(), name);
+
+        gameRepository.save(game);
+
+        return "redirect:/games/" + game.id().id().toString();
     }
 
     private Game findOrThrow(String gameIdString) {

@@ -1,6 +1,7 @@
 package ninja.ranner.xogame.adapter.in.web;
 
 import ninja.ranner.xogame.InMemoryStoresTestConfiguration;
+import ninja.ranner.xogame.application.port.ConfigurableGameIdGenerator;
 import ninja.ranner.xogame.application.port.GameRepository;
 import ninja.ranner.xogame.application.port.InMemoryEventStore;
 import ninja.ranner.xogame.domain.Game;
@@ -96,5 +97,20 @@ class GameControllerMvcTest {
 
         assertThat(result)
                 .hasStatusOk();
+    }
+
+    @Test
+    void postGame_redirectsToCreatedGame(@Autowired ConfigurableGameIdGenerator gameIdGenerator) {
+        GameId newGameId = GameId.random();
+        gameIdGenerator.configure(newGameId);
+        MvcTestResult result = mvcTester.post()
+                                        .uri("/games")
+                                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                        .param("gameName", "New Game Name")
+                                        .exchange();
+
+        assertThat(result)
+                .hasStatus3xxRedirection()
+                .hasRedirectedUrl("/games/" + newGameId.id().toString());
     }
 }

@@ -23,7 +23,7 @@ class GameControllerTest {
     @Test
     void loadsGameFromRepository() {
         GameRepository gameRepository = new GameRepository(new InMemoryEventStore());
-        GameController gameController = new GameController(gameRepository);
+        GameController gameController = new GameController(gameRepository, GameId::random);
         GameId gameId = GameId.random();
         gameRepository.save(Game.create(gameId, "Game Name"));
 
@@ -39,7 +39,7 @@ class GameControllerTest {
     @Test
     void fill_fillsCell() {
         GameRepository gameRepository = new GameRepository(new InMemoryEventStore());
-        GameController gameController = new GameController(gameRepository);
+        GameController gameController = new GameController(gameRepository, GameId::random);
         GameId gameId = GameId.random();
         gameRepository.save(Game.create(gameId, "Game Name"));
 
@@ -166,5 +166,17 @@ class GameControllerTest {
         }
     }
 
+    @Test
+    void createGame_storesCreatedGame() {
+        GameRepository gameRepository = new GameRepository(new InMemoryEventStore());
+        GameId newGameId = GameId.random();
+        GameController gameController = new GameController(gameRepository, () -> newGameId);
 
+        gameController.createGame("My New Game");
+
+        assertThat(gameRepository.findById(newGameId))
+                .get()
+                .extracting(Game::name)
+                .isEqualTo("My New Game");
+    }
 }
