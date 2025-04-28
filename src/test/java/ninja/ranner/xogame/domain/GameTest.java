@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 class GameTest {
 
@@ -96,6 +96,22 @@ class GameTest {
                             new GameDrawn());
         }
     }
+
+    @Nested
+    public class CommandsProtectInvariants {
+        @Test
+        void fillingTheSameCellTwiceThrowsException() {
+            Game game = Game.reconstitute(List.of(
+                    gameCreated(),
+                    xFilledCell(1, 2)
+            ));
+
+            assertThatThrownBy(() -> game.fillCell(Cell.at(1, 2)))
+                    .isExactlyInstanceOf(CellAlreadyFilled.class)
+                    .hasMessage("Cell(1,2) is already filled by X");
+        }
+    }
+
 
     @Nested
     public class EventsProjectState {

@@ -56,4 +56,8 @@ public class Board {
         board.put(cell, player);
     }
 
+    Optional<Player> filledBy(Cell cell) {
+        return Optional.ofNullable(board.get(cell));
+    }
+
 }

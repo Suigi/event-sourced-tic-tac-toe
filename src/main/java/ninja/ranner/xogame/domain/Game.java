@@ -8,7 +8,8 @@ public class Game extends EventSourcedAggregate {
     private Player currentPlayer = Player.X;
     private String name;
 
-    private Game() {}
+    private Game() {
+    }
 
     // Commands
 
@@ -19,18 +20,24 @@ public class Game extends EventSourcedAggregate {
     }
 
     public void fillCell(Cell cell) {
-        // TODO guard against filling an already filled cell
+        ensureFreeCell(cell);
 
         emit(new CellFilled(currentPlayer, cell));
 
         determineGameFinished();
     }
 
+    private void ensureFreeCell(Cell cell) {
+        board.filledBy(cell)
+             .ifPresent(player -> {throw new CellAlreadyFilled(cell, player);});
+    }
+
     private void determineGameFinished() {
-        board.determineWinner().ifPresentOrElse(
-                winner -> emit(new GameWon(winner)),
-                this::determineDraw
-        );
+        board.determineWinner()
+             .ifPresentOrElse(
+                     winner -> emit(new GameWon(winner)),
+                     this::determineDraw
+             );
     }
 
     private void determineDraw() {
