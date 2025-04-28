@@ -1,5 +1,8 @@
+@import ninja.ranner.xogame.adapter.in.web.EventView
 @import ninja.ranner.xogame.adapter.in.web.GameController.GameView
+@import java.util.List
 @param GameView game
+@param List<EventView> gameEvents
 <!DOCTYPE html>
 <html lang="en">
 
@@ -55,13 +58,26 @@
             background: #ebfbff;
         }
 
+        .container {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            grid-gap: 0.5rem;
+        }
+
     </style>
 </head>
 
 <body>
 <h1>Game: ${game.name()}</h1>
-@template.board(game = game)
-@template.game-result(game = game, isHtmx = false)
+<div class="container">
+    <section class="game-container">
+        @template.board(game = game)
+        @template.game-result(game = game, isHtmx = false)
+    </section>
+    <section id="events">
+        @template.events-list(events = gameEvents, isHtmx = false)
+    </section>
+</div>
 </body>
 
 </html>

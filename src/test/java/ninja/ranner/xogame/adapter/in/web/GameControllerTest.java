@@ -3,10 +3,7 @@ package ninja.ranner.xogame.adapter.in.web;
 import ninja.ranner.xogame.application.GameService;
 import ninja.ranner.xogame.application.port.GameRepository;
 import ninja.ranner.xogame.application.port.InMemoryEventStore;
-import ninja.ranner.xogame.domain.Cell;
-import ninja.ranner.xogame.domain.Game;
-import ninja.ranner.xogame.domain.GameFactory;
-import ninja.ranner.xogame.domain.GameId;
+import ninja.ranner.xogame.domain.*;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,46 +20,74 @@ class GameControllerTest {
 
     @Test
     void showGame_loadsGameFromRepository() {
-        GameRepository gameRepository = new GameRepository(new InMemoryEventStore());
-        GameController gameController = new GameController(
-                GameService.createForTest(gameRepository));
+        Fixture fixture = Fixture.create();
         GameId gameId = GameId.random();
-        gameRepository.save(Game.create(gameId, "Game Name"));
+        Game game = Game.create(gameId, "Game Name");
+        game.fillCell(Cell.at(0, 1));
+        fixture.gameRepository().save(game);
 
         ConcurrentModel model = new ConcurrentModel();
-        gameController.showGame(gameId.uuid().toString(), model);
+        fixture.gameController().showGame(gameId.uuid().toString(), model);
 
         assertThat(model)
                 .extracting("game", InstanceOfAssertFactories.type(GameController.GameView.class))
                 .extracting(GameController.GameView::name)
                 .isEqualTo("Game Name");
+        assertThat(model)
+                .extracting("gameEvents", InstanceOfAssertFactories.list(EventView.class))
+                .containsExactly(
+                        EventView.from(new CellFilled(Player.X, Cell.at(0, 1))),
+                        EventView.from(new GameCreated(gameId, "Game Name"))
+                );
     }
 
     @Test
     void fill_fillsCell() {
-        GameRepository gameRepository = new GameRepository(new InMemoryEventStore());
-        GameController gameController = new GameController(GameService.createForTest(gameRepository));
+        Fixture fixture = Fixture.create();
         GameId gameId = GameId.random();
-        gameRepository.save(Game.create(gameId, "Game Name"));
+        fixture.gameRepository.save(Game.create(gameId, "Game Name"));
 
-        Collection<ModelAndView> modelsAndViews = gameController.fill(gameId.uuid().toString(), 1, 2);
+        Collection<ModelAndView> modelsAndViews = fixture.gameController.fill(gameId.uuid().toString(), 1, 2);
 
-        Map<String, Map<String, Object>> modelByView = modelsAndViews.stream().collect(Collectors.toMap(
-                ModelAndView::getViewName,
-                ModelAndView::getModel));
-        assertThat(modelByView)
-                .extractingByKey("board")
+        assertThat(modelForView(modelsAndViews, "board"))
                 .extracting("game", InstanceOfAssertFactories.type(GameController.GameView.class))
                 .extracting(gameView -> gameView.cellAt(1, 2))
                 .isEqualTo("X");
-        assertThat(modelByView)
-                .extractingByKey("game-result")
+    }
+
+    @Test
+    void fill_updatesGameResult_outOfBand() {
+        Fixture fixture = Fixture.create();
+        GameId gameId = GameId.random();
+        fixture.gameRepository.save(Game.create(gameId, "Game Name"));
+
+        Collection<ModelAndView> modelsAndViews = fixture.gameController.fill(gameId.uuid().toString(), 1, 2);
+
+        Map<String, Object> model = modelForView(modelsAndViews, "game-result");
+        assertThat(model)
+                .containsEntry("isHtmx", true)
                 .extracting("game", InstanceOfAssertFactories.type(GameController.GameView.class))
                 .extracting(GameController.GameView::result)
                 .isEqualTo("In Progress");
-        assertThat(modelByView)
-                .extractingByKey("game-result", InstanceOfAssertFactories.map(String.class, Object.class))
-                .containsEntry("isHtmx", true);
+    }
+
+    @Test
+    void fill_updatesGameEvents_outOfBand() {
+        Fixture fixture = Fixture.create();
+        GameId gameId = GameId.random();
+        Game game = Game.create(gameId, "Game Name");
+        fixture.gameRepository.save(game);
+
+        Collection<ModelAndView> modelsAndViews = fixture.gameController.fill(gameId.uuid().toString(), 1, 2);
+
+        assertThat(modelForView(modelsAndViews, "events-list"))
+                .containsEntry("isHtmx", true)
+                .extracting("events", InstanceOfAssertFactories.list(EventView.class))
+                .extracting(EventView::eventName)
+                .containsExactly(
+                        "CellFilled",
+                        "GameCreated"
+                );
     }
 
     @Nested
@@ -170,10 +195,11 @@ class GameControllerTest {
 
     @Test
     void createGame_storesCreatedGame() {
-        GameRepository gameRepository = new GameRepository(new InMemoryEventStore());
+        InMemoryEventStore eventStore = new InMemoryEventStore();
+        GameRepository gameRepository = new GameRepository(eventStore);
         GameId newGameId = GameId.random();
         GameService gameService = new GameService(gameRepository, () -> newGameId);
-        GameController gameController = new GameController(gameService);
+        GameController gameController = new GameController(gameService, eventStore);
 
         gameController.createGame("My New Game");
 
@@ -182,4 +208,24 @@ class GameControllerTest {
                 .extracting(Game::name)
                 .isEqualTo("My New Game");
     }
+
+    private record Fixture(GameRepository gameRepository, GameController gameController) {
+        private static Fixture create() {
+            InMemoryEventStore eventStore = new InMemoryEventStore();
+            GameRepository gameRepository = new GameRepository(eventStore);
+            GameController gameController = new GameController(GameService.createForTest(gameRepository), eventStore);
+            return new Fixture(gameRepository, gameController);
+        }
+    }
+
+    private Map<String, Object> modelForView(Collection<ModelAndView> modelsAndViews, String viewName) {
+        Map<String, Map<String, Object>> modelByView = modelsAndViews.stream().collect(Collectors.toMap(
+                ModelAndView::getViewName,
+                ModelAndView::getModel));
+        assertThat(modelByView)
+                .as("collection contains model for view " + viewName)
+                .containsKey(viewName);
+        return modelByView.get(viewName);
+    }
+
 }

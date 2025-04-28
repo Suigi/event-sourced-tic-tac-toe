@@ -2,6 +2,7 @@ package ninja.ranner.xogame.adapter.in.web;
 
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import ninja.ranner.xogame.application.GameService;
+import ninja.ranner.xogame.application.port.EventStore;
 import ninja.ranner.xogame.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -17,9 +18,11 @@ import java.util.*;
 public class GameController {
 
     private final GameService gameService;
+    private final EventStore eventStore;
 
-    public GameController(GameService gameService) {
+    public GameController(GameService gameService, EventStore eventStore) {
         this.gameService = gameService;
+        this.eventStore = eventStore;
     }
 
     @GetMapping("/{gameId}")
@@ -27,7 +30,14 @@ public class GameController {
             @PathVariable("gameId") String gameIdString,
             Model model) {
         Game game = findOrThrow(gameIdString);
+        List<Event> events = eventStore.findAllForId(game.id()).orElseThrow();
         model.addAttribute("game", GameView.from(game));
+        model.addAttribute("gameEvents",
+                events.stream()
+                      .map(EventView::from)
+                      .toList()
+                      .reversed()
+        );
         return "game";
     }
 
@@ -37,11 +47,22 @@ public class GameController {
                                          @RequestParam("x") int x,
                                          @RequestParam("y") int y) {
         Game savedGame = gameService.fill(findOrThrow(gameIdString), Cell.at(x, y));
+        List<Event> events = eventStore.findAllForId(savedGame.id()).orElseThrow();
         return List.of(
-                new ModelAndView("board", Map.of("game", GameView.from(savedGame))),
+                new ModelAndView("board", Map.of(
+                        "game", GameView.from(savedGame)
+                )),
                 new ModelAndView("game-result", Map.of(
-                        "game", GameView.from(savedGame),
-                        "isHtmx", true))
+                        "isHtmx", true,
+                        "game", GameView.from(savedGame)
+                )),
+                new ModelAndView("events-list", Map.of(
+                        "isHtmx", true,
+                        "events", events.stream()
+                                        .map(EventView::from)
+                                        .toList()
+                                        .reversed()
+                ))
         );
     }
 

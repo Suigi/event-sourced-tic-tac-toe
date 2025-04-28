@@ -17,9 +17,14 @@ public class DebugController {
     @GetMapping("game")
     public String game(Model model) {
         Game game = Game.create(GameId.random(), "GAME NAME");
-        game.fillCell(Cell.at(1,1));
-        game.fillCell(Cell.at(2,2));
+        game.fillCell(Cell.at(1, 1));
+        game.fillCell(Cell.at(2, 2));
         model.addAttribute("game", GameController.GameView.from(game));
+        model.addAttribute("gameEvents", game
+                .uncommittedEvents()
+                .map(EventView::from)
+                .toList()
+                .reversed());
         return "game";
     }
 
