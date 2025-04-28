@@ -20,13 +20,6 @@ class GameTest {
                     .containsExactly(new GameCreated("My game"));
         }
 
-        @Test
-        void emittedEventsAreAppliedImmediately() {
-            Game game = Game.create("My game");
-
-            assertThat(game.name())
-                    .isEqualTo("My game");
-        }
     }
 
     @Nested
@@ -39,7 +32,7 @@ class GameTest {
             assertThat(game.name())
                    .isEqualTo("The Game");
         }
-    }
 
+    }
 
 }

@@ -1,12 +1,11 @@
 package ninja.ranner.xogame.domain;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
-public class Game {
-    private final List<Event> uncommittedEvents = new ArrayList<>();
+public class Game extends EventSourcedAggregate {
     private String name;
+
+    private Game() {}
 
     public static Game create(String name) {
         Game game = new Game();
@@ -20,20 +19,12 @@ public class Game {
         return game;
     }
 
-    private void apply(Event event) {
+    @Override
+    protected void apply(Event event) {
         switch (event) {
             case GameCreated(String newGameName) -> this.name = newGameName;
             default -> {}
         }
-    }
-
-    private void emit(Event event) {
-        uncommittedEvents.add(event);
-        apply(event);
-    }
-
-    public Stream<Event> uncommittedEvents() {
-        return uncommittedEvents.stream();
     }
 
     public String name() {
