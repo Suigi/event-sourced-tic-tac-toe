@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
 
@@ -35,7 +36,7 @@ class GameControllerMvcTest {
     }
 
     @Test
-    void getGame_returnsViewName() {
+    void getGame_returnsGameView() {
         GameId gameId = GameId.random();
         gameRepository.save(Game.create(gameId, "IRRELEVANT GAME NAME"));
 
@@ -59,5 +60,37 @@ class GameControllerMvcTest {
 
         assertThat(result)
                 .hasStatus(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void postFill_whenGameDoesNotExist_returns404NotFound() {
+        String notFoundGameUuid = UUID.randomUUID().toString();
+
+        MvcTestResult result = mvcTester.post()
+                                        .uri("/games/{gameId}/fill", notFoundGameUuid)
+                                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                        .param("x", "1")
+                                        .param("y", "2")
+                                        .exchange();
+
+        assertThat(result)
+                .hasStatus(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void postFill_returns200Ok() {
+        GameId gameId = GameId.random();
+        gameRepository.save(Game.create(gameId, "IRRELEVANT GAME NAME"));
+
+        MvcTestResult result = mvcTester.post()
+                                        .uri("/games/{gameId}/fill", gameId.id().toString())
+                                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                        .param("x", "1")
+                                        .param("y", "2")
+                                        .header("hx-request", "true")
+                                        .exchange();
+
+        assertThat(result)
+                .hasStatusOk();
     }
 }

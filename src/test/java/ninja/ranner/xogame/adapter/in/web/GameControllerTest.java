@@ -9,6 +9,11 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.ConcurrentModel;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,6 +33,25 @@ class GameControllerTest {
                 .extracting("game", InstanceOfAssertFactories.type(GameController.GameView.class))
                 .extracting(GameController.GameView::name)
                 .isEqualTo("Game Name");
+    }
+
+    @Test
+    void fill_fillsCell() {
+        GameRepository gameRepository = new InMemoryGameRepository();
+        GameController gameController = new GameController(gameRepository);
+        GameId gameId = GameId.random();
+        gameRepository.save(Game.create(gameId, "Game Name"));
+
+        Collection<ModelAndView> modelsAndViews = gameController.fill(gameId.id().toString(), 1, 2);
+
+        Map<String, Map<String, Object>> modelByView = modelsAndViews.stream().collect(Collectors.toMap(
+                ModelAndView::getViewName,
+                ModelAndView::getModel));
+        assertThat(modelByView)
+                .extractingByKey("board")
+                .extracting("game", InstanceOfAssertFactories.type(GameController.GameView.class))
+                .extracting(gameView -> gameView.cellAt(1, 2))
+                .isEqualTo("X");
     }
 
     @Nested
@@ -55,8 +79,8 @@ class GameControllerTest {
         @Test
         void fillOfFilledCellIsNameOfThePlayer() {
             Game game = Game.create(GameId.random(), "IRRELEVANT GAME NAME");
-            game.fillCell(Cell.at(1,1));
-            game.fillCell(Cell.at(2,2));
+            game.fillCell(Cell.at(1, 1));
+            game.fillCell(Cell.at(2, 2));
 
             GameController.GameView gameView = GameController.GameView.from(game);
 
@@ -79,8 +103,8 @@ class GameControllerTest {
         @Test
         void classOfFilledCellContainsNameOfThePlayer() {
             Game game = Game.create(GameId.random(), "IRRELEVANT GAME NAME");
-            game.fillCell(Cell.at(1,1));
-            game.fillCell(Cell.at(2,2));
+            game.fillCell(Cell.at(1, 1));
+            game.fillCell(Cell.at(2, 2));
 
             GameController.GameView gameView = GameController.GameView.from(game);
 

@@ -5,10 +5,23 @@
 
 <head>
     <meta charset="UTF-8">
+    <script src="https://unpkg.com/htmx.org@2.0.4"
+            integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+            crossorigin="anonymous"></script>
     <title>Game</title>
     <!--suppress CssUnusedSymbol -->
     <style>
-        .board {
+        button, input[type="submit"], input[type="reset"] {
+            background: none;
+            color: inherit;
+            border: none;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+            outline: inherit;
+        }
+
+        #board {
             width: fit-content;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -16,7 +29,8 @@
             gap: 1px;
             background-color: gray;
         }
-        .board .cell {
+
+        #board .cell {
             height: 50px;
             width: 50px;
             text-align: center;
@@ -25,11 +39,13 @@
             background: white;
             font-weight: bold;
         }
-        .board .player-x {
+
+        #board .player-x {
             color: red;
             background: #ffe4e7;
         }
-        .board .player-o {
+
+        #board .player-o {
             color: blue;
             background: #ebfbff;
         }
@@ -39,14 +55,7 @@
 
 <body>
     <h1>Game: ${game.name()}</h1>
-    <div class="board">
-        @for(int x=0;x<3;x++)
-            @for(int y=0;y<3;y++)
-                <div class="${game.cssClassFor(x,y)}">${game.cellAt(x,y)}</div>
-            @endfor
-        @endfor
-
-    </div>
+    @template.board(game = game)
 </body>
 
 </html>

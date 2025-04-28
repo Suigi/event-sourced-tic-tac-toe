@@ -1,5 +1,6 @@
 package ninja.ranner.xogame.adapter.in.web;
 
+import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import ninja.ranner.xogame.application.port.GameRepository;
 import ninja.ranner.xogame.domain.Cell;
 import ninja.ranner.xogame.domain.Game;
@@ -8,14 +9,11 @@ import ninja.ranner.xogame.domain.Player;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 @RequestMapping("/games/")
@@ -31,17 +29,34 @@ public class GameController {
     public String game(
             @PathVariable("gameId") String gameIdString,
             Model model) {
-        Optional<Game> game = gameRepository.findById(GameId.of(UUID.fromString(gameIdString)));
-        if (game.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        model.addAttribute("game", GameView.from(game.get()));
+        Game game = findOrThrow(gameIdString);
+        model.addAttribute("game", GameView.from(game));
         return "game";
     }
 
-    public record GameView(String name, Map<Cell, Player> cells) {
+    @HxRequest
+    @PostMapping("/{gameId}/fill")
+    public Collection<ModelAndView> fill(@PathVariable("gameId") String gameIdString,
+                                         @RequestParam("x") int x,
+                                         @RequestParam("y") int y) {
+        Game game = findOrThrow(gameIdString);
+        game.fillCell(Cell.at(x, y));
+        Game savedGame = gameRepository.save(game);
+        return List.of(
+                new ModelAndView("board", Map.of("game", GameView.from(savedGame)))
+        );
+    }
+
+    private Game findOrThrow(String gameIdString) {
+        return gameRepository
+                .findById(GameId.of(UUID.fromString(gameIdString)))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    public record GameView(String gameId, String name, Map<Cell, Player> cells) {
         public static GameView from(Game game) {
             return new GameView(
+                    game.id().id().toString(),
                     game.name(),
                     game.boardMap()
             );

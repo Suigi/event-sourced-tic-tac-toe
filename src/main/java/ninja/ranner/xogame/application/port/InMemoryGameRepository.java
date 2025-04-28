@@ -4,10 +4,7 @@ import ninja.ranner.xogame.domain.Event;
 import ninja.ranner.xogame.domain.Game;
 import ninja.ranner.xogame.domain.GameId;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class InMemoryGameRepository implements GameRepository {
 
@@ -15,7 +12,9 @@ public class InMemoryGameRepository implements GameRepository {
 
     @Override
     public Game save(Game game) {
-        store.put(game.id(), game.uncommittedEvents().toList());
+        store.computeIfAbsent(game.id(), (_) -> new ArrayList<>())
+             .addAll(game.uncommittedEvents().toList());
+
         return findById(game.id()).orElseThrow();
     }
 
