@@ -2,7 +2,6 @@ package ninja.ranner.xogame.application;
 
 import ninja.ranner.xogame.application.port.GameIdGenerator;
 import ninja.ranner.xogame.application.port.GameRepository;
-import ninja.ranner.xogame.application.port.InMemoryEventStore;
 import ninja.ranner.xogame.domain.Cell;
 import ninja.ranner.xogame.domain.Game;
 import ninja.ranner.xogame.domain.GameId;
@@ -13,17 +12,13 @@ public class GameService {
     private final GameRepository gameRepository;
     private final GameIdGenerator gameIdGenerator;
 
-    public static GameService createForTest() {
-        return createForTest(new GameRepository(new InMemoryEventStore()));
+    public GameService(GameRepository gameRepository, GameIdGenerator gameIdGenerator) {
+        this.gameRepository = gameRepository;
+        this.gameIdGenerator = gameIdGenerator;
     }
 
     public static GameService createForTest(GameRepository gameRepository) {
         return new GameService(gameRepository, GameId::random);
-    }
-
-    public GameService(GameRepository gameRepository, GameIdGenerator gameIdGenerator) {
-        this.gameRepository = gameRepository;
-        this.gameIdGenerator = gameIdGenerator;
     }
 
     public Game fill(Game game, Cell cell) {

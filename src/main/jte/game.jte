@@ -59,9 +59,9 @@
 </head>
 
 <body>
-    <h1>Game: ${game.name()}</h1>
-    @template.board(game = game)
-    @template.game-result(game = game, isHtmx = false)
+<h1>Game: ${game.name()}</h1>
+@template.board(game = game)
+@template.game-result(game = game, isHtmx = false)
 </body>
 
 </html>

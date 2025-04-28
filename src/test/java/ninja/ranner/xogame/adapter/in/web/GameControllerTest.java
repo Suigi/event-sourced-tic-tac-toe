@@ -41,7 +41,7 @@ class GameControllerTest {
     @Test
     void fill_fillsCell() {
         GameRepository gameRepository = new GameRepository(new InMemoryEventStore());
-        GameController gameController = new GameController(new GameService(gameRepository, GameId::random));
+        GameController gameController = new GameController(GameService.createForTest(gameRepository));
         GameId gameId = GameId.random();
         gameRepository.save(Game.create(gameId, "Game Name"));
 
