@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class GameTest {
 
@@ -25,7 +26,7 @@ class GameTest {
 
         @Test
         void fillingFirstCellEmitsCellFilledByX() {
-            Game game = Game.reconstitute(List.of(gameCreated()));
+            Game game = Game.reconstitute(List.of(GameFactory.Events.gameCreated()));
 
             game.fillCell(Cell.at(0, 0));
 
@@ -36,7 +37,7 @@ class GameTest {
         @Test
         void fillingSecondCellEmitsCellFilledByO() {
             Game game = Game.reconstitute(List.of(
-                    gameCreated(),
+                    GameFactory.Events.gameCreated(),
                     new CellFilled(Player.X, Cell.at(0, 0))
             ));
 
@@ -55,11 +56,11 @@ class GameTest {
             // | . . . |
             // +-------+
             Game game = Game.reconstitute(List.of(
-                    gameCreated(),
-                    xFilledCell(0, 0),
-                    oFilledCell(0, 2),
-                    xFilledCell(1, 0),
-                    oFilledCell(1, 2)
+                    GameFactory.Events.gameCreated(),
+                    GameFactory.Events.xFilledCell(0, 0),
+                    GameFactory.Events.oFilledCell(0, 2),
+                    GameFactory.Events.xFilledCell(1, 0),
+                    GameFactory.Events.oFilledCell(1, 2)
             ));
 
             game.fillCell(Cell.at(2, 0));
@@ -79,15 +80,15 @@ class GameTest {
             // | X X O |
             // +-------+
             Game game = Game.reconstitute(List.of(
-                    gameCreated(),
-                    xFilledCell(0, 0),
-                    oFilledCell(1, 1),
-                    xFilledCell(2, 0),
-                    oFilledCell(1, 0),
-                    xFilledCell(1, 2),
-                    oFilledCell(0, 1),
-                    xFilledCell(2, 1),
-                    oFilledCell(2, 2)
+                    GameFactory.Events.gameCreated(),
+                    GameFactory.Events.xFilledCell(0, 0),
+                    GameFactory.Events.oFilledCell(1, 1),
+                    GameFactory.Events.xFilledCell(2, 0),
+                    GameFactory.Events.oFilledCell(1, 0),
+                    GameFactory.Events.xFilledCell(1, 2),
+                    GameFactory.Events.oFilledCell(0, 1),
+                    GameFactory.Events.xFilledCell(2, 1),
+                    GameFactory.Events.oFilledCell(2, 2)
             ));
 
             game.fillCell(Cell.at(0, 2));
@@ -104,8 +105,8 @@ class GameTest {
         @Test
         void fillingTheSameCellTwiceThrowsException() {
             Game game = Game.reconstitute(List.of(
-                    gameCreated(),
-                    xFilledCell(1, 2)
+                    GameFactory.Events.gameCreated(),
+                    GameFactory.Events.xFilledCell(1, 2)
             ));
 
             assertThatThrownBy(() -> game.fillCell(Cell.at(1, 2)))
@@ -129,7 +130,7 @@ class GameTest {
 
         @Test
         void newGameIsInProgress() {
-            Game game = Game.reconstitute(List.of(gameCreated()));
+            Game game = Game.reconstitute(List.of(GameFactory.Events.gameCreated()));
 
             assertThat(game.result())
                     .isEqualTo(GameResult.GAME_IN_PROGRESS);
@@ -137,7 +138,7 @@ class GameTest {
 
         @Test
         void playerXHasTheFirstTurn() {
-            Game game = Game.reconstitute(List.of(gameCreated()));
+            Game game = Game.reconstitute(List.of(GameFactory.Events.gameCreated()));
 
             assertThat(game.currentPlayer())
                     .isEqualTo(Player.X);
@@ -146,7 +147,7 @@ class GameTest {
         @Test
         void playerOHasTheSecondTurn() {
             Game game = Game.reconstitute(List.of(
-                    gameCreated(),
+                    GameFactory.Events.gameCreated(),
                     new CellFilled(Player.X, Cell.at(1, 1))
             ));
 
@@ -156,7 +157,7 @@ class GameTest {
 
         @Test
         void newGameBoardIsAllEmpty() {
-            Game game = Game.reconstitute(List.of(gameCreated()));
+            Game game = Game.reconstitute(List.of(GameFactory.Events.gameCreated()));
 
             assertThat(game.boardMap())
                     .isEmpty();
@@ -165,11 +166,11 @@ class GameTest {
         @Test
         void gameBoardContainsFilledCells() {
             Game game = Game.reconstitute(List.of(
-                    gameCreated(),
-                    xFilledCell(0, 0),
-                    oFilledCell(1, 1),
-                    xFilledCell(2, 2),
-                    oFilledCell(2, 0)
+                    GameFactory.Events.gameCreated(),
+                    GameFactory.Events.xFilledCell(0, 0),
+                    GameFactory.Events.oFilledCell(1, 1),
+                    GameFactory.Events.xFilledCell(2, 2),
+                    GameFactory.Events.oFilledCell(2, 0)
             ));
 
             assertThat(game.boardMap())
@@ -183,21 +184,7 @@ class GameTest {
 
         @Test
         void whenXWon_gameResultShowsPlayerXWon() {
-            // Game board state:
-            // +-------+
-            // | X . O |
-            // | X . O |
-            // | X . . |
-            // +-------+
-            Game game = Game.reconstitute(List.of(
-                    gameCreated(),
-                    xFilledCell(0, 0),
-                    oFilledCell(0, 2),
-                    xFilledCell(1, 0),
-                    oFilledCell(1, 2),
-                    xFilledCell(2, 0),
-                    new GameWon(Player.X)
-            ));
+            Game game = GameFactory.createGameWonByX();
 
             assertThat(game.result())
                     .isEqualTo(GameResult.PLAYER_X_WINS);
@@ -205,22 +192,7 @@ class GameTest {
 
         @Test
         void whenOWon_gameResultShowsPlayerOWon() {
-            // Game board state:
-            // +-------+
-            // | X . O |
-            // | X X O |
-            // | . . O |
-            // +-------+
-            Game game = Game.reconstitute(List.of(
-                    gameCreated(),
-                    xFilledCell(0, 0),
-                    oFilledCell(0, 2),
-                    xFilledCell(1, 0),
-                    oFilledCell(1, 2),
-                    xFilledCell(1, 1),
-                    oFilledCell(2, 2),
-                    new GameWon(Player.O)
-            ));
+            Game game = GameFactory.createGameWonByO();
 
             assertThat(game.result())
                     .isEqualTo(GameResult.PLAYER_O_WINS);
@@ -228,42 +200,12 @@ class GameTest {
 
         @Test
         void whenGameEndsInDraw_gameResultShowsDraw() {
-            // Game board state:
-            // +-------+
-            // | X O . |
-            // | O O X |
-            // | X X O |
-            // +-------+
-            Game game = Game.reconstitute(List.of(
-                    gameCreated(),
-                    xFilledCell(0, 0),
-                    oFilledCell(1, 1),
-                    xFilledCell(2, 0),
-                    oFilledCell(1, 0),
-                    xFilledCell(1, 2),
-                    oFilledCell(0, 1),
-                    xFilledCell(2, 1),
-                    oFilledCell(2, 2),
-                    xFilledCell(0, 2),
-                    new GameDrawn()
-            ));
+            Game game = GameFactory.createDrawnGame();
 
             assertThat(game.result())
                     .isEqualTo(GameResult.DRAW);
         }
 
-    }
-
-    private GameCreated gameCreated() {
-        return new GameCreated(GameId.random(), "IRRELEVANT GAME NAME");
-    }
-
-    private CellFilled xFilledCell(int x, int y) {
-        return new CellFilled(Player.X, Cell.at(x, y));
-    }
-
-    private CellFilled oFilledCell(int x, int y) {
-        return new CellFilled(Player.O, Cell.at(x, y));
     }
 
 }

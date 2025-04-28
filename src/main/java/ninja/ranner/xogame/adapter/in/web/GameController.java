@@ -2,10 +2,7 @@ package ninja.ranner.xogame.adapter.in.web;
 
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import ninja.ranner.xogame.application.port.GameRepository;
-import ninja.ranner.xogame.domain.Cell;
-import ninja.ranner.xogame.domain.Game;
-import ninja.ranner.xogame.domain.GameId;
-import ninja.ranner.xogame.domain.Player;
+import ninja.ranner.xogame.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -43,7 +40,10 @@ public class GameController {
         game.fillCell(Cell.at(x, y));
         Game savedGame = gameRepository.save(game);
         return List.of(
-                new ModelAndView("board", Map.of("game", GameView.from(savedGame)))
+                new ModelAndView("board", Map.of("game", GameView.from(savedGame))),
+                new ModelAndView("game-result", Map.of(
+                        "game", GameView.from(savedGame),
+                        "isHtmx", true))
         );
     }
 
@@ -53,13 +53,23 @@ public class GameController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    public record GameView(String gameId, String name, Map<Cell, Player> cells) {
+    public record GameView(String gameId, String name, String result, Map<Cell, Player> cells) {
         public static GameView from(Game game) {
             return new GameView(
                     game.id().id().toString(),
                     game.name(),
+                    mapResult(game.result()),
                     game.boardMap()
             );
+        }
+
+        private static String mapResult(GameResult result) {
+            return switch (result) {
+                case GAME_IN_PROGRESS -> "In Progress";
+                case PLAYER_X_WINS -> "Player X wins!";
+                case PLAYER_O_WINS -> "Player O wins!";
+                case DRAW -> "It's a draw!";
+            };
         }
 
         public String cellAt(int x, int y) {
@@ -78,5 +88,6 @@ public class GameController {
                     })
                     .orElse("cell");
         }
+
     }
 }
