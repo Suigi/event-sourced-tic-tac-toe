@@ -21,14 +21,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GameControllerTest {
 
     @Test
-    void loadsGameFromRepository() {
+    void showGame_loadsGameFromRepository() {
         GameRepository gameRepository = new GameRepository(new InMemoryEventStore());
         GameController gameController = new GameController(gameRepository, GameId::random);
         GameId gameId = GameId.random();
         gameRepository.save(Game.create(gameId, "Game Name"));
 
         ConcurrentModel model = new ConcurrentModel();
-        gameController.game(gameId.id().toString(), model);
+        gameController.showGame(gameId.id().toString(), model);
 
         assertThat(model)
                 .extracting("game", InstanceOfAssertFactories.type(GameController.GameView.class))

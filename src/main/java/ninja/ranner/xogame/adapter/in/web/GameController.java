@@ -27,7 +27,7 @@ public class GameController {
     }
 
     @GetMapping("/{gameId}")
-    public String game(
+    public String showGame(
             @PathVariable("gameId") String gameIdString,
             Model model) {
         Game game = findOrThrow(gameIdString);
