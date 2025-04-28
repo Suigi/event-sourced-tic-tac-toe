@@ -1,5 +1,6 @@
 package ninja.ranner.xogame.adapter.in.web;
 
+import ninja.ranner.xogame.application.GameService;
 import ninja.ranner.xogame.application.port.GameRepository;
 import ninja.ranner.xogame.application.port.InMemoryEventStore;
 import ninja.ranner.xogame.domain.Cell;
@@ -23,12 +24,13 @@ class GameControllerTest {
     @Test
     void showGame_loadsGameFromRepository() {
         GameRepository gameRepository = new GameRepository(new InMemoryEventStore());
-        GameController gameController = new GameController(gameRepository, GameId::random);
+        GameController gameController = new GameController(
+                GameService.createForTest(gameRepository));
         GameId gameId = GameId.random();
         gameRepository.save(Game.create(gameId, "Game Name"));
 
         ConcurrentModel model = new ConcurrentModel();
-        gameController.showGame(gameId.id().toString(), model);
+        gameController.showGame(gameId.uuid().toString(), model);
 
         assertThat(model)
                 .extracting("game", InstanceOfAssertFactories.type(GameController.GameView.class))
@@ -39,11 +41,11 @@ class GameControllerTest {
     @Test
     void fill_fillsCell() {
         GameRepository gameRepository = new GameRepository(new InMemoryEventStore());
-        GameController gameController = new GameController(gameRepository, GameId::random);
+        GameController gameController = new GameController(new GameService(gameRepository, GameId::random));
         GameId gameId = GameId.random();
         gameRepository.save(Game.create(gameId, "Game Name"));
 
-        Collection<ModelAndView> modelsAndViews = gameController.fill(gameId.id().toString(), 1, 2);
+        Collection<ModelAndView> modelsAndViews = gameController.fill(gameId.uuid().toString(), 1, 2);
 
         Map<String, Map<String, Object>> modelByView = modelsAndViews.stream().collect(Collectors.toMap(
                 ModelAndView::getViewName,
@@ -170,7 +172,8 @@ class GameControllerTest {
     void createGame_storesCreatedGame() {
         GameRepository gameRepository = new GameRepository(new InMemoryEventStore());
         GameId newGameId = GameId.random();
-        GameController gameController = new GameController(gameRepository, () -> newGameId);
+        GameService gameService = new GameService(gameRepository, () -> newGameId);
+        GameController gameController = new GameController(gameService);
 
         gameController.createGame("My New Game");
 

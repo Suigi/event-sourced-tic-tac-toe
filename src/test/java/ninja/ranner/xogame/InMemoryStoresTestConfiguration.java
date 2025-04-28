@@ -1,5 +1,6 @@
 package ninja.ranner.xogame;
 
+import ninja.ranner.xogame.application.GameService;
 import ninja.ranner.xogame.application.port.ConfigurableGameIdGenerator;
 import ninja.ranner.xogame.application.port.EventStore;
 import ninja.ranner.xogame.application.port.GameRepository;
@@ -23,6 +24,11 @@ public class InMemoryStoresTestConfiguration {
     @Bean
     ConfigurableGameIdGenerator gameIdGenerator() {
         return new ConfigurableGameIdGenerator();
+    }
+
+    @Bean
+    GameService GameService(GameRepository gameRepository, ConfigurableGameIdGenerator gameIdGenerator) {
+        return new GameService(gameRepository, gameIdGenerator);
     }
 
 }

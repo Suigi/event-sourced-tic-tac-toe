@@ -46,7 +46,7 @@ class GameControllerMvcTest {
         gameRepository.save(Game.create(gameId, "IRRELEVANT GAME NAME"));
 
         MvcTestResult result = mvcTester.get()
-                                        .uri("/games/{gameId}", gameId.id().toString())
+                                        .uri("/games/{gameId}", gameId.uuid().toString())
                                         .exchange();
 
         assertThat(result)
@@ -88,7 +88,7 @@ class GameControllerMvcTest {
         gameRepository.save(Game.create(gameId, "IRRELEVANT GAME NAME"));
 
         MvcTestResult result = mvcTester.post()
-                                        .uri("/games/{gameId}/fill", gameId.id().toString())
+                                        .uri("/games/{gameId}/fill", gameId.uuid().toString())
                                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                                         .param("x", "1")
                                         .param("y", "2")
@@ -111,6 +111,6 @@ class GameControllerMvcTest {
 
         assertThat(result)
                 .hasStatus3xxRedirection()
-                .hasRedirectedUrl("/games/" + newGameId.id().toString());
+                .hasRedirectedUrl("/games/" + newGameId.uuid().toString());
     }
 }

@@ -1,8 +1,7 @@
 package ninja.ranner.xogame.adapter.in.web;
 
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
-import ninja.ranner.xogame.application.port.GameIdGenerator;
-import ninja.ranner.xogame.application.port.GameRepository;
+import ninja.ranner.xogame.application.GameService;
 import ninja.ranner.xogame.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -17,13 +16,10 @@ import java.util.*;
 @RequestMapping("/games")
 public class GameController {
 
-    private final GameRepository gameRepository;
-    private final GameIdGenerator gameIdGenerator;
+    private final GameService gameService;
 
-    public GameController(GameRepository gameRepository,
-                          GameIdGenerator gameIdGenerator) {
-        this.gameRepository = gameRepository;
-        this.gameIdGenerator = gameIdGenerator;
+    public GameController(GameService gameService) {
+        this.gameService = gameService;
     }
 
     @GetMapping("/{gameId}")
@@ -40,9 +36,7 @@ public class GameController {
     public Collection<ModelAndView> fill(@PathVariable("gameId") String gameIdString,
                                          @RequestParam("x") int x,
                                          @RequestParam("y") int y) {
-        Game game = findOrThrow(gameIdString);
-        game.fillCell(Cell.at(x, y));
-        Game savedGame = gameRepository.save(game);
+        Game savedGame = gameService.fill(findOrThrow(gameIdString), Cell.at(x, y));
         return List.of(
                 new ModelAndView("board", Map.of("game", GameView.from(savedGame))),
                 new ModelAndView("game-result", Map.of(
@@ -53,23 +47,19 @@ public class GameController {
 
     @PostMapping()
     public String createGame(@RequestParam("gameName") String name) {
-        Game game = Game.create(gameIdGenerator.generate(), name);
-
-        gameRepository.save(game);
-
-        return "redirect:/games/" + game.id().id().toString();
+        Game game = gameService.create(name);
+        return "redirect:/games/" + game.id().uuid().toString();
     }
 
     private Game findOrThrow(String gameIdString) {
-        return gameRepository
-                .findById(GameId.of(UUID.fromString(gameIdString)))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return gameService.find(GameId.of(UUID.fromString(gameIdString)))
+                          .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     public record GameView(String gameId, String name, String result, Map<Cell, Player> cells) {
         public static GameView from(Game game) {
             return new GameView(
-                    game.id().id().toString(),
+                    game.id().uuid().toString(),
                     game.name(),
                     mapResult(game.result()),
                     game.boardMap()

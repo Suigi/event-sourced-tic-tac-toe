@@ -1,5 +1,6 @@
 package ninja.ranner.xogame.spring;
 
+import ninja.ranner.xogame.application.GameService;
 import ninja.ranner.xogame.application.port.EventStore;
 import ninja.ranner.xogame.application.port.GameIdGenerator;
 import ninja.ranner.xogame.application.port.GameRepository;
@@ -12,18 +13,23 @@ import org.springframework.context.annotation.Configuration;
 public class XoGameConfiguration {
 
     @Bean
-    GameRepository gameRepository(EventStore eventStore) {
-        return new GameRepository(eventStore);
-    }
-
-    @Bean
     EventStore eventStore() {
         return new InMemoryEventStore();
     }
 
     @Bean
+    GameRepository gameRepository(EventStore eventStore) {
+        return new GameRepository(eventStore);
+    }
+
+    @Bean
     GameIdGenerator gameIdGenerator() {
         return GameId::random;
+    }
+
+    @Bean
+    GameService gameService(GameRepository gameRepository, GameIdGenerator gameIdGenerator) {
+        return new GameService(gameRepository, gameIdGenerator);
     }
 
 }

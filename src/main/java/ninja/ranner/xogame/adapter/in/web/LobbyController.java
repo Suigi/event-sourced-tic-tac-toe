@@ -38,7 +38,7 @@ public class LobbyController {
         public void apply(Event event) {
             if (event instanceof GameCreated(GameId gameId, String newGameName)) {
                 games.add(new GameSummary(
-                        gameId.id().toString(),
+                        gameId.uuid().toString(),
                         newGameName));
             }
         }
