@@ -1,13 +1,25 @@
 package ninja.ranner.xogame.domain;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Game extends EventSourcedAggregate {
     private final HashMap<Cell, Player> board = new HashMap<>();
     private Player currentPlayer = Player.X;
     private String name;
+
+    private static final List<List<Cell>> winningArrangements = List.of(
+            // Rows
+            List.of(Cell.at(0,0), Cell.at(0,1), Cell.at(0,2)),
+            List.of(Cell.at(1,0), Cell.at(1,1), Cell.at(1,2)),
+            List.of(Cell.at(2,0), Cell.at(2,1), Cell.at(2,2)),
+            // Columns
+            List.of(Cell.at(0,0), Cell.at(1,0), Cell.at(2,0)),
+            List.of(Cell.at(0,1), Cell.at(1,1), Cell.at(2,1)),
+            List.of(Cell.at(0,2), Cell.at(1,2), Cell.at(2,2)),
+            // Diagonals
+            List.of(Cell.at(0,0), Cell.at(1,1), Cell.at(2,2)),
+            List.of(Cell.at(0,2), Cell.at(1,1), Cell.at(2,0))
+    );
 
     private Game() {}
 
@@ -25,7 +37,46 @@ public class Game extends EventSourcedAggregate {
     }
 
     public void fillCell(Cell cell) {
+        if (board.containsKey(cell)) {
+            throw new IllegalStateException();
+        }
         emit(new CellFilled(currentPlayer, cell));
+
+        determineGameFinished();
+    }
+
+    private void determineGameFinished() {
+        Optional<Player> winner = winningArrangements.stream()
+                .map(this::determineWinner)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+        winner.ifPresentOrElse(
+                w -> emit(new GameWon(w)),
+                this::determineDraw);
+    }
+
+    private void determineDraw() {
+        if (board.size() == 9) {
+            emit(new GameDrawn());
+        }
+    }
+
+    private Optional<Player> determineWinner(List<Cell> cells) {
+        List<Player> fills = cells.stream()
+                .map(board::get)
+                .filter(Objects::nonNull)
+                .toList();
+        if (fills.size() != 3) {
+            return Optional.empty();
+        }
+        if (fills.stream().allMatch(Player.X::equals)) {
+            return Optional.of(Player.X);
+        }
+        if (fills.stream().allMatch(Player.O::equals)) {
+            return Optional.of(Player.O);
+        }
+        return Optional.empty();
     }
 
     // Queries

@@ -43,6 +43,58 @@ class GameTest {
             assertThat(game.uncommittedEvents())
                     .containsExactly(new CellFilled(Game.Player.O, Cell.at(2, 2)));
         }
+
+        @Test
+        void winningMoveEmitsGameWon() {
+            // Game board state:
+            // +-------+
+            // | X . O |
+            // | X . O |
+            // | . . . |
+            // +-------+
+            Game game = Game.reconstitute(List.of(
+                    gameCreated(),
+                    xFilledCell(0, 0),
+                    oFilledCell(0, 2),
+                    xFilledCell(1, 0),
+                    oFilledCell(1, 2)
+            ));
+
+            game.fillCell(Cell.at(2, 0));
+
+            assertThat(game.uncommittedEvents())
+                    .containsExactly(
+                            new CellFilled(Game.Player.X, Cell.at(2, 0)),
+                            new GameWon(Game.Player.X));
+        }
+
+        @Test
+        void finalDrawMoveEmitGameDrawn() {
+            // Game board state:
+            // +-------+
+            // | X O . |
+            // | O O X |
+            // | X X O |
+            // +-------+
+            Game game = Game.reconstitute(List.of(
+                    gameCreated(),
+                    xFilledCell(0, 0),
+                    oFilledCell(1, 1),
+                    xFilledCell(2, 0),
+                    oFilledCell(1, 0),
+                    xFilledCell(1, 2),
+                    oFilledCell(0, 1),
+                    xFilledCell(2, 1),
+                    oFilledCell(2, 2)
+            ));
+
+            game.fillCell(Cell.at(0, 2));
+
+            assertThat(game.uncommittedEvents())
+                    .containsExactly(
+                            new CellFilled(Game.Player.X, Cell.at(0, 2)),
+                            new GameDrawn());
+        }
     }
 
     @Nested
@@ -95,10 +147,10 @@ class GameTest {
 
             assertThat(game.board())
                     .containsExactlyInAnyOrderEntriesOf(Map.of(
-                            Cell.at(0,0), Game.Player.X,
-                            Cell.at(1,1), Game.Player.O,
-                            Cell.at(2,2), Game.Player.X,
-                            Cell.at(2,0), Game.Player.O
+                            Cell.at(0, 0), Game.Player.X,
+                            Cell.at(1, 1), Game.Player.O,
+                            Cell.at(2, 2), Game.Player.X,
+                            Cell.at(2, 0), Game.Player.O
                     ));
         }
 
