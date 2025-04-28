@@ -8,22 +8,20 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.ConcurrentModel;
 
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GameControllerTest {
 
     @Test
     void loadsGameFromRepository() {
-        String gameIdString = UUID.randomUUID().toString();
         GameRepository gameRepository = new InMemoryGameRepository();
         GameController gameController = new GameController(gameRepository);
         ConcurrentModel model = new ConcurrentModel();
-        Game game = Game.create(GameId.random(), "Game Name");
+        GameId gameId = GameId.random();
+        Game game = Game.create(gameId, "Game Name");
         gameRepository.save(game);
 
-        gameController.game(gameIdString, model);
+        gameController.game(gameId.id().toString(), model);
 
         assertThat(model)
                 .extracting("game", InstanceOfAssertFactories.type(GameController.GameView.class))

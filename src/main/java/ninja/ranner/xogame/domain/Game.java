@@ -7,6 +7,7 @@ public class Game extends EventSourcedAggregate {
     private GameResult gameResult = GameResult.GAME_IN_PROGRESS;
     private Player currentPlayer = Player.X;
     private String name;
+    private GameId gameId;
 
     private Game() {
     }
@@ -48,6 +49,10 @@ public class Game extends EventSourcedAggregate {
 
     // Queries
 
+    public GameId id() {
+        return gameId;
+    }
+
     public String name() {
         return name;
     }
@@ -75,7 +80,10 @@ public class Game extends EventSourcedAggregate {
     @Override
     protected void apply(Event event) {
         switch (event) {
-            case GameCreated(GameId gameId, String newGameName) -> this.name = newGameName;
+            case GameCreated(GameId newGameId, String newGameName) -> {
+                this.gameId = newGameId;
+                this.name = newGameName;
+            }
             case CellFilled(Player player, Cell cell) -> {
                 this.currentPlayer = player == Player.X ? Player.O : Player.X;
                 board.fill(player, cell);
