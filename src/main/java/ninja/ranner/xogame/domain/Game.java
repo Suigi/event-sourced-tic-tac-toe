@@ -4,21 +4,22 @@ import java.util.*;
 
 public class Game extends EventSourcedAggregate {
     private final HashMap<Cell, Player> board = new HashMap<>();
+    private GameResult gameResult = GameResult.GAME_IN_PROGRESS;
     private Player currentPlayer = Player.X;
     private String name;
 
     private static final List<List<Cell>> winningArrangements = List.of(
             // Rows
-            List.of(Cell.at(0,0), Cell.at(0,1), Cell.at(0,2)),
-            List.of(Cell.at(1,0), Cell.at(1,1), Cell.at(1,2)),
-            List.of(Cell.at(2,0), Cell.at(2,1), Cell.at(2,2)),
+            List.of(Cell.at(0, 0), Cell.at(0, 1), Cell.at(0, 2)),
+            List.of(Cell.at(1, 0), Cell.at(1, 1), Cell.at(1, 2)),
+            List.of(Cell.at(2, 0), Cell.at(2, 1), Cell.at(2, 2)),
             // Columns
-            List.of(Cell.at(0,0), Cell.at(1,0), Cell.at(2,0)),
-            List.of(Cell.at(0,1), Cell.at(1,1), Cell.at(2,1)),
-            List.of(Cell.at(0,2), Cell.at(1,2), Cell.at(2,2)),
+            List.of(Cell.at(0, 0), Cell.at(1, 0), Cell.at(2, 0)),
+            List.of(Cell.at(0, 1), Cell.at(1, 1), Cell.at(2, 1)),
+            List.of(Cell.at(0, 2), Cell.at(1, 2), Cell.at(2, 2)),
             // Diagonals
-            List.of(Cell.at(0,0), Cell.at(1,1), Cell.at(2,2)),
-            List.of(Cell.at(0,2), Cell.at(1,1), Cell.at(2,0))
+            List.of(Cell.at(0, 0), Cell.at(1, 1), Cell.at(2, 2)),
+            List.of(Cell.at(0, 2), Cell.at(1, 1), Cell.at(2, 0))
     );
 
     private Game() {}
@@ -93,6 +94,10 @@ public class Game extends EventSourcedAggregate {
         return board;
     }
 
+    public GameResult result() {
+        return gameResult;
+    }
+
     // Internal projection
 
     public static Game reconstitute(List<Event> events) {
@@ -109,6 +114,10 @@ public class Game extends EventSourcedAggregate {
                 this.currentPlayer = player == Player.X ? Player.O : Player.X;
                 this.board.put(cell, player);
             }
+            case GameWon(Player winner) -> gameResult = winner == Player.X
+                    ? GameResult.PLAYER_X_WINS
+                    : GameResult.PLAYER_O_WINS;
+            case GameDrawn() -> gameResult = GameResult.DRAW;
             default -> {}
         }
     }

@@ -109,6 +109,14 @@ class GameTest {
         }
 
         @Test
+        void newGameIsInProgress() {
+            Game game = Game.reconstitute(List.of(gameCreated()));
+
+            assertThat(game.result())
+                    .isEqualTo(GameResult.GAME_IN_PROGRESS);
+        }
+
+        @Test
         void playerXHasTheFirstTurn() {
             Game game = Game.reconstitute(List.of(gameCreated()));
 
@@ -154,6 +162,76 @@ class GameTest {
                     ));
         }
 
+        @Test
+        void whenXWon_gameResultShowsPlayerXWon() {
+            // Game board state:
+            // +-------+
+            // | X . O |
+            // | X . O |
+            // | X . . |
+            // +-------+
+            Game game = Game.reconstitute(List.of(
+                    gameCreated(),
+                    xFilledCell(0, 0),
+                    oFilledCell(0, 2),
+                    xFilledCell(1, 0),
+                    oFilledCell(1, 2),
+                    xFilledCell(2, 0),
+                    new GameWon(Game.Player.X)
+            ));
+
+            assertThat(game.result())
+                    .isEqualTo(GameResult.PLAYER_X_WINS);
+        }
+
+        @Test
+        void whenOWon_gameResultShowsPlayerOWon() {
+            // Game board state:
+            // +-------+
+            // | X . O |
+            // | X X O |
+            // | . . O |
+            // +-------+
+            Game game = Game.reconstitute(List.of(
+                    gameCreated(),
+                    xFilledCell(0, 0),
+                    oFilledCell(0, 2),
+                    xFilledCell(1, 0),
+                    oFilledCell(1, 2),
+                    xFilledCell(1, 1),
+                    oFilledCell(2, 2),
+                    new GameWon(Game.Player.O)
+            ));
+
+            assertThat(game.result())
+                    .isEqualTo(GameResult.PLAYER_O_WINS);
+        }
+
+        @Test
+        void whenGameEndsInDraw_gameResultShowsDraw() {
+            // Game board state:
+            // +-------+
+            // | X O . |
+            // | O O X |
+            // | X X O |
+            // +-------+
+            Game game = Game.reconstitute(List.of(
+                    gameCreated(),
+                    xFilledCell(0, 0),
+                    oFilledCell(1, 1),
+                    xFilledCell(2, 0),
+                    oFilledCell(1, 0),
+                    xFilledCell(1, 2),
+                    oFilledCell(0, 1),
+                    xFilledCell(2, 1),
+                    oFilledCell(2, 2),
+                    xFilledCell(0, 2),
+                    new GameDrawn()
+            ));
+
+            assertThat(game.result())
+                    .isEqualTo(GameResult.DRAW);
+        }
     }
 
     private GameCreated gameCreated() {
