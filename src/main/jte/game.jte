@@ -62,6 +62,11 @@
             display: grid;
             grid-template-columns: auto 1fr;
             grid-gap: 0.5rem;
+            height: 80vh;
+        }
+
+        section#events {
+            overflow-y: auto;
         }
 
     </style>

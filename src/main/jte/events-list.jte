@@ -17,11 +17,11 @@
         .event {
             border: 1px solid green;
             display: grid;
-            grid-template-columns: auto 1fr;
+            grid-template-columns: 1fr;
             padding: 0.5rem;
             background: #e1ffdb;
-            width: 300px;
-            column-gap: 0.5rem;
+            width: 450px;
+            gap: 0.5rem;
         }
 
         .event pre {
@@ -30,9 +30,9 @@
         }
 
         .event .event-name {
-            grid-column-start: 0;
-            grid-column-end: span 2;
             font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.2rem;
         }
 
         .event .key {
@@ -42,14 +42,18 @@
         .event .value {
             text-align: right;
             overflow: hidden;
+            text-wrap: nowrap;
+            font-family: monospace;
         }
     </style>
     @for(EventView event : events)
         <div class="event">
             <span class="event-name">${event.eventName()}</span>
             @for(EventView.FieldView field : event.fields())
-                <pre class="key">${field.name()}</pre>
-                <pre class="value">${field.value()}</pre>
+                <div>
+                    <strong class="key">${field.name()}</strong>:
+                    <span class="value">${field.value()}</span>
+                </div>
             @endfor
         </div>
     @endfor
