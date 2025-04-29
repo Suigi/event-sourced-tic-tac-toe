@@ -9,7 +9,7 @@ import ninja.ranner.xogame.domain.GameId;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class XoGameConfiguration {
 
     @Bean
