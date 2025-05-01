@@ -1,0 +1,16 @@
+plan:
+  cd {{invocation_directory()}} && tofu plan -out "tfplan"
+
+destroy:
+  cd {{invocation_directory()}} && tofu plan -destroy -out "tfplan"
+
+apply:
+  cd {{invocation_directory()}} && tofu apply "tfplan"
+
+start-all:
+  cd ./artifact-repository-tofu && tofu apply -auto-approve
+  cd ./cloud-run-tofu && tofu apply -auto-approve
+
+destroy-all:
+  cd ./cloud-run-tofu && tofu apply -destroy -auto-approve
+  cd ./artifact-repository-tofu && tofu apply -destroy -auto-approve
