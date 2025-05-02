@@ -88,7 +88,7 @@
             flex-direction: column;
             align-items: stretch;
             padding: 0;
-            height: calc(100vh - 10rem);
+            height: calc(100vh - 6rem);
             overflow: hidden;
 
             max-width: 1600px;
@@ -130,12 +130,6 @@
             }
         }
 
-        @media (min-width: 1600px) {
-            .container {
-                max-width: 1600px;
-            }
-        }
-
         /* Narrow screen layout */
         @media (max-width: 1023px) {
             body, html {
@@ -152,15 +146,18 @@
                 flex: 0 0 auto;
             }
 
-            #events {
+            section#events {
                 flex: 1 1 auto;
                 overflow-y: auto;
-                padding-top: 1rem;
+                margin-left: 1rem;
+                margin-right: 1rem;
+                margin-bottom: 1rem;
             }
         }
 
 
     </style>
+
 </head>
 
 <body>
