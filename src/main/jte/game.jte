@@ -14,6 +14,30 @@
     <title>Game</title>
     <!--suppress CssUnusedSymbol -->
     <style>
+        body, html {
+            margin: 0;
+            overflow-y: hidden;
+            font-family: Helvetica, serif;
+        }
+
+        header {
+            height: 5rem;
+            background: lightgoldenrodyellow;
+            border-bottom: 1px solid goldenrod;
+
+            display: flex; /* Enables flexbox */
+            align-items: center; /* Vertically centers content */
+            padding: 0;
+
+            max-width: 1600px;
+            margin: 0 auto 1rem auto;
+        }
+
+        header .game-name {
+            font-size: 2rem;
+            margin-left: 1rem;
+        }
+
         button, input[type="submit"], input[type="reset"] {
             background: none;
             color: inherit;
@@ -35,8 +59,9 @@
         }
 
         #board .cell {
-            height: 50px;
-            width: 50px;
+            height: 100px;
+            width: 100px;
+            font-size: xxx-large;
             text-align: center;
             align-content: center;
             box-sizing: border-box;
@@ -59,21 +84,91 @@
         }
 
         .container {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            grid-gap: 0.5rem;
-            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            padding: 0;
+            height: calc(100vh - 10rem);
+            overflow: hidden;
+
+            max-width: 1600px;
+            margin: 0 auto;
+
+            background: #f5f5f5;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2rem;
         }
 
         section#events {
-            overflow-y: auto;
+            margin-top: 2rem;
         }
+
+        /* Wide screen layout - side by side */
+        @media (min-width: 1024px) {
+            .container {
+                display: grid;
+                grid-template-columns: 1fr 2fr;
+                gap: 2rem;
+                justify-content: stretch;
+                align-items: start;
+                /*padding: 2rem;*/
+            }
+
+            .game-container {
+                align-items: center;
+            }
+
+            section#events {
+                overflow-y: auto;
+                height: 100%;
+                margin-right: 2rem;
+            }
+        }
+
+        @media (min-width: 1600px) {
+            .container {
+                max-width: 1600px;
+            }
+        }
+
+        /* Narrow screen layout */
+        @media (max-width: 1023px) {
+            body, html {
+                height: 100%;
+                margin: 0;
+            }
+
+            .container {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .game-container {
+                flex: 0 0 auto;
+            }
+
+            #events {
+                flex: 1 1 auto;
+                overflow-y: auto;
+                padding-top: 1rem;
+            }
+        }
+
 
     </style>
 </head>
 
 <body>
-<h1>Game: ${game.name()}</h1>
+<header>
+    <div class="game-name">
+        Game: ${game.name()}
+    </div>
+</header>
 <div class="container">
     <section class="game-container">
         @template.board(game = game)

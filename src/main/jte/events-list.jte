@@ -11,16 +11,16 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 0.5rem;
-            justify-items: end;
+            justify-items: stretch;
         }
 
         .event {
             border: 1px solid green;
+            border-left: 3px solid green;
             display: grid;
             grid-template-columns: 1fr;
             padding: 0.5rem;
             background: #e1ffdb;
-            width: 450px;
             gap: 0.5rem;
         }
 
