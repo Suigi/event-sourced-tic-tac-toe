@@ -61,12 +61,13 @@
         #board .cell {
             height: 100px;
             width: 100px;
-            font-size: xxx-large;
             text-align: center;
             align-content: center;
             box-sizing: border-box;
-            background: white;
+            background-color: white;
             font-weight: bold;
+            font-size: 0;
+            position: relative;
         }
 
         #board .cell:disabled {
@@ -75,12 +76,32 @@
 
         #board .player-x {
             color: red;
-            background: #ffe4e7;
+            background-color: #ffe4e7;
+            background-image: url("/x.svg");
         }
 
         #board .player-o {
             color: blue;
-            background: #ebfbff;
+            background-color: #ebfbff;
+            background-image: url("/o.svg");
+        }
+
+        #board.x-turn .cell:not(.player-o):not(.player-o):not(:disabled):hover::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: url('/x.svg') center/100% no-repeat;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        #board.o-turn .cell:not(.player-o):not(.player-o):not(:disabled):hover::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: url('/o.svg') center/100% no-repeat;
+            opacity: 0.4;
+            pointer-events: none;
         }
 
         .container {

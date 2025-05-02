@@ -82,16 +82,26 @@ public class GameController {
             String name,
             String result,
             boolean isOver,
-            Map<Cell, Player> cells
-    ) {
+            Map<Cell, Player> cells,
+            String currentPlayerClass) {
         public static GameView from(Game game) {
             return new GameView(
                     game.id().uuid().toString(),
                     game.name(),
                     mapResult(game.result()),
                     game.result() != GameResult.GAME_IN_PROGRESS,
-                    game.boardMap()
-            );
+                    game.boardMap(),
+                    mapTurn(game));
+        }
+
+        private static String mapTurn(Game game) {
+            if (game.result() != GameResult.GAME_IN_PROGRESS) {
+                return "no-turn";
+            }
+            return switch (game.currentPlayer()) {
+                case X -> "x-turn";
+                case O -> "o-turn";
+            };
         }
 
         private static String mapResult(GameResult result) {
@@ -126,5 +136,6 @@ public class GameController {
             }
             return cells.get(Cell.at(x, y)) == null;
         }
+
     }
 }

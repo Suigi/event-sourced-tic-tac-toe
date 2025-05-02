@@ -7,12 +7,15 @@ import ninja.ranner.xogame.domain.*;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -191,6 +194,45 @@ class GameControllerTest {
             assertThat(gameView.result())
                     .isEqualTo("Player O wins!");
         }
+
+        @Test
+        void currentTurnClass_whenItsPlayerXsTurn() {
+            Game game = Game.create(GameId.random(), "Player X's turn");
+
+            GameController.GameView gameView = GameController.GameView.from(game);
+
+            assertThat(gameView.currentPlayerClass())
+                    .isEqualTo("x-turn");
+        }
+
+        @Test
+        void currentTurnClass_whenItsPlayerOsTurn() {
+            Game game = Game.create(GameId.random(), "Player X's turn");
+            game.fillCell(Cell.at(1, 1));
+
+            GameController.GameView gameView = GameController.GameView.from(game);
+
+            assertThat(gameView.currentPlayerClass())
+                    .isEqualTo("o-turn");
+        }
+
+        @ParameterizedTest
+        @MethodSource("gamesThatAreOver")
+        void currentTurnClass_whenGameIsOver_isNoTurn(Game game) {
+            GameController.GameView gameView = GameController.GameView.from(game);
+
+            assertThat(gameView.currentPlayerClass())
+                    .isEqualTo("no-turn");
+        }
+
+        public static Stream<Game> gamesThatAreOver() {
+            return Stream.of(
+                    GameFactory.createDrawnGame(),
+                    GameFactory.createGameWonByX(),
+                    GameFactory.createGameWonByO()
+            );
+        }
+
     }
 
     @Test
