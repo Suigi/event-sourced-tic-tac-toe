@@ -15,7 +15,7 @@ variable "github_owner" {
 
 variable "github_repo" {
   type    = string
-  default = "Suigi/event-sourced-tic-tac-toe"
+  default = "event-sourced-tic-tac-toe"
 }
 
 variable "github_actor" {
