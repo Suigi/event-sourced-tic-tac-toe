@@ -15,7 +15,7 @@ env:
   ARTIFACT_PACKAGE_NAME: 'tic-tac-toe'
   REGION: 'europe-west4'
   CLOUD_RUN_SERVICE: 'tic-tac-toe-service'
-  WORKLOAD_IDENTITY_PROVIDER: "projects/${{ env.GOOGLE_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github/providers/github-provider"
+  WORKLOAD_IDENTITY_PROVIDER: "projects/870874262403/locations/global/workloadIdentityPools/github/providers/github-provider"
 
 jobs:
   deploy:
