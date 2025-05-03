@@ -35,10 +35,16 @@ jobs:
           service_account: "github-deployer@${{ env.GOOGLE_PROJECT_NUMBER }}.iam.gserviceaccount.com"
           create_credentials_file: 'false'
 
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'graalvm' # See 'Supported distributions' for available options
+          java-version: '24'
+
       - name: Build and Push Native Image
         run: |
           DOCKER_TAG='${{ steps.vars.outputs.docker_tag }}'
           ./mvnw spring-boot:build-image \
+            --no-transfer-progress \
             -Dspring.profiles.active=native \
             -Dimage.platform=linux/amd64 \
             -Dimage.name="$DOCKER_TAG" \
