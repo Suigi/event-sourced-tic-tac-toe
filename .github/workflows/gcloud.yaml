@@ -28,12 +28,12 @@ jobs:
         id: vars
         run: echo "docker_tag=${{ env.REGION }}-docker.pkg.dev/${{ env.GOOGLE_PROJECT_ID }}/${{ env.ARTIFACT_REPOSITORY_NAME }}/${{ env.ARTIFACT_PACKAGE_NAME }}:${{ github.sha }}" >> $GITHUB_OUTPUT
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
+      - name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
         with:
-          token_format: "id_token"
-          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          workload_identity_provider: '${{ env.WORKLOAD_IDENTITY_PROVIDER }}'
           service_account: "github-deployer@${{ env.GOOGLE_PROJECT_NUMBER }}.iam.gserviceaccount.com"
+          create_credentials_file: 'false'
 
       - name: Build and Push Native Image
         run: |
