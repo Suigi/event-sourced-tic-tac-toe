@@ -31,6 +31,7 @@
         <image.platform/>
         <image.name>${project.artifactId}:${project.version}</image.name>
         <image.publish>false</image.publish>
+        <jte.version>3.2.1</jte.version>
     </properties>
     <dependencies>
         <dependency>
@@ -44,7 +45,7 @@
         <dependency>
             <groupId>gg.jte</groupId>
             <artifactId>jte-spring-boot-starter-3</artifactId>
-            <version>3.1.16</version>
+            <version>${jte.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.wimdeblauwe</groupId>
@@ -96,7 +97,7 @@
             <plugin>
                 <groupId>gg.jte</groupId>
                 <artifactId>jte-maven-plugin</artifactId>
-                <version>3.1.16</version>
+                <version>${jte.version}</version>
                 <executions>
                     <execution>
                         <id>jte-generate</id>
@@ -109,9 +110,21 @@
                             <contentType>Html</contentType>
                             <binaryStaticContent>true</binaryStaticContent>
                             <targetResourceDirectory>${project.build.outputDirectory}</targetResourceDirectory>
+                            <extensions>
+                                <extension>
+                                    <className>gg.jte.nativeimage.NativeResourcesExtension</className>
+                                </extension>
+                            </extensions>
                         </configuration>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>gg.jte</groupId>
+                        <artifactId>jte-native-resources</artifactId>
+                        <version>${jte.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
