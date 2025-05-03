@@ -33,6 +33,7 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
           workload_identity_provider: '${{ env.WORKLOAD_IDENTITY_PROVIDER }}'
+          project_id: '${{ env.GOOGLE_PROJECT_ID }}'
           create_credentials_file: 'false'
 
       - uses: actions/setup-java@v4
