@@ -1,0 +1,59 @@
+name: Build and Deploy to Cloud Run
+
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  GOOGLE_PROJECT_ID: 'es-tic-tac-toe'
+  GOOGLE_PROJECT_NUMBER: '870874262403'
+  ARTIFACT_REPOSITORY_NAME: 'tic-tac-toe'
+  ARTIFACT_PACKAGE_NAME: 'tic-tac-toe'
+  REGION: 'europe-west4'
+  CLOUD_RUN_SERVICE: 'tic-tac-toe-service'
+  WORKLOAD_IDENTITY_PROVIDER: "projects/${{ env.GOOGLE_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github/providers/github-provider"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set Image Tag
+        id: vars
+        run: echo "docker_tag=${{ env.REGION }}-docker.pkg.dev/${{ env.GOOGLE_PROJECT_ID }}/${{ env.ARTIFACT_REPOSITORY_NAME }}/${{ env.ARTIFACT_PACKAGE_NAME }}:${{ github.sha }}" >> $GITHUB_OUTPUT
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          token_format: "id_token"
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: "github-deployer@${{ env.GOOGLE_PROJECT_NUMBER }}.iam.gserviceaccount.com"
+
+      - name: Build and Push Native Image
+        run: |
+          DOCKER_TAG='${{ steps.vars.outputs.docker_tag }}'
+          ./mvnw spring-boot:build-image \
+            -Dspring.profiles.active=native \
+            -Dimage.platform=linux/amd64 \
+            -Dimage.name="$DOCKER_TAG" \
+            -Dimage.publish=false
+          docker push "${DOCKER_TAG}"
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: 'google-github-actions/deploy-cloudrun@v2'
+        with:
+          project_id: '${{ env.GOOGLE_PROJECT_ID }}'
+          service: '${{ env.CLOUD_RUN_SERVICE }}'
+          region: '${{ env.REGION }}'
+          image: '${{ steps.vars.outputs.docker_tag }}'
+
+      - name: Print URL
+        run: |-
+          echo "Service URL: ${{ steps.deploy.outputs.url }}"
