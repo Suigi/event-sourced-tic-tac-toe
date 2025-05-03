@@ -6,7 +6,7 @@ test:
 
 gcloud-build-image:
   ./mvnw spring-boot:build-image \
-    -Dspring.profiles.active=nodb,jte-precompile \
+    -Dspring.profiles.active=default \
     -Dimage.platform=linux/amd64 \
     -Dimage.name={{gcloud-registry}}:{{image-tag}} \
     -Dimage.publish=false

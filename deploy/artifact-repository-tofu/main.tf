@@ -7,6 +7,11 @@ terraform {
   }
 
   required_version = ">= 1.0"
+
+  backend "gcs" {
+    bucket = "es-tic-tac-toe-opentofu-state"
+    prefix = "tofu/state/artifact-repository"
+  }
 }
 
 provider "google" {

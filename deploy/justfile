@@ -1,3 +1,6 @@
+init:
+  cd {{invocation_directory()}} && tofu init
+
 plan:
   cd {{invocation_directory()}} && tofu plan -out "tfplan"
 
