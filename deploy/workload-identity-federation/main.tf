@@ -41,5 +41,5 @@ resource "google_iam_workload_identity_pool_provider" "github_provider" {
     "attribute.ref"        = "assertion.ref"
   }
 
-  attribute_condition = "attribute.repository=='${var.github_owner}/${var.github_repo}' && attribute.ref=='refs/heads/main' && attribute.actor=='${var.github_actor}'"
+  attribute_condition = "assertion.repository=='${var.github_owner}/${var.github_repo}' && assertion.ref=='refs/heads/main' && assertion.actor=='${var.github_actor}'"
 }

@@ -34,7 +34,6 @@ jobs:
         with:
           workload_identity_provider: '${{ env.WORKLOAD_IDENTITY_PROVIDER }}'
           project_id: '${{ env.GOOGLE_PROJECT_ID }}'
-          create_credentials_file: 'false'
 
       - uses: actions/setup-java@v4
         with:
@@ -53,7 +52,7 @@ jobs:
           DOCKER_TAG='${{ steps.vars.outputs.docker_tag }}'
           ./mvnw spring-boot:build-image \
             --no-transfer-progress \
-            -Dspring.profiles.active=native \
+            -Pnative \
             -Dimage.platform=linux/amd64 \
             -Dimage.name="$DOCKER_TAG" \
             -Dimage.publish=false

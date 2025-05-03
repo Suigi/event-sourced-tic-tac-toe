@@ -47,6 +47,7 @@ resource "google_artifact_registry_repository_iam_binding" "binding" {
 }
 
 locals {
-  oidc_principal = "principalSet://iam.googleapis.com/${data.google_iam_workload_identity_pool.github.name}/attribute.subject/*"
+  # oidc_principal = "principalSet://iam.googleapis.com/${data.google_iam_workload_identity_pool.github.name}/attribute.subject/*"
+  oidc_principal = "principalSet://iam.googleapis.com/${data.google_iam_workload_identity_pool.github.name}/attribute.repository/Suigi/event-sourced-tic-tac-toe"
 }
 
