@@ -57,7 +57,7 @@ resource "google_cloud_run_v2_service" "default" {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
 
       startup_probe {
-        initial_delay_seconds = 15
+        initial_delay_seconds = 1
         timeout_seconds       = 1
         period_seconds        = 5
         failure_threshold     = 3
