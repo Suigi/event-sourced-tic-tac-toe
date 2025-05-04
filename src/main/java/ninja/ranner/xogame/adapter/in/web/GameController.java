@@ -28,16 +28,27 @@ public class GameController {
     @GetMapping("/{gameId}")
     public String showGame(
             @PathVariable("gameId") String gameIdString,
+            @RequestParam(value = "numberOfEventsToSkip", defaultValue = "0") int numberOfEventsToSkip,
             Model model) {
-        Game game = findOrThrow(gameIdString);
-        List<Event> events = eventStore.findAllForId(game.id()).orElseThrow();
-        model.addAttribute("game", GameView.from(game));
+        GameId gameId = GameId.of(UUID.fromString(gameIdString));
+        List<Event> events = eventStore.findAllForId(gameId)
+                                       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        GameView gameView;
+        if (numberOfEventsToSkip > 0) {
+            Game game = Game.reconstitute(events.subList(0, events.size() - numberOfEventsToSkip));
+            gameView = GameView.ofHistorical(game);
+        } else {
+            Game game = findOrThrow(gameIdString);
+            gameView = GameView.of(game);
+        }
+        model.addAttribute("game", gameView);
         model.addAttribute("gameEvents",
                 events.stream()
                       .map(EventView::from)
                       .toList()
                       .reversed()
         );
+        model.addAttribute("skippedEvents", numberOfEventsToSkip);
         return "game";
     }
 
@@ -50,18 +61,20 @@ public class GameController {
         List<Event> events = eventStore.findAllForId(savedGame.id()).orElseThrow();
         return List.of(
                 new ModelAndView("board", Map.of(
-                        "game", GameView.from(savedGame)
+                        "game", GameView.of(savedGame)
                 )),
                 new ModelAndView("game-result", Map.of(
                         "isHtmx", true,
-                        "game", GameView.from(savedGame)
+                        "game", GameView.of(savedGame)
                 )),
                 new ModelAndView("events-list", Map.of(
                         "isHtmx", true,
                         "events", events.stream()
                                         .map(EventView::from)
                                         .toList()
-                                        .reversed()
+                                        .reversed(),
+                        "skippedEvents", 0,
+                        "baseUrl", "/games/" + gameIdString
                 ))
         );
     }
@@ -81,15 +94,25 @@ public class GameController {
             String gameId,
             String name,
             String result,
-            boolean isOver,
+            boolean isPlayable,
             Map<Cell, Player> cells,
             String currentPlayerClass) {
-        public static GameView from(Game game) {
+        public static GameView of(Game game) {
             return new GameView(
                     game.id().uuid().toString(),
                     game.name(),
                     mapResult(game.result()),
-                    game.result() != GameResult.GAME_IN_PROGRESS,
+                    game.result() == GameResult.GAME_IN_PROGRESS,
+                    game.boardMap(),
+                    mapTurn(game));
+        }
+
+        public static GameView ofHistorical(Game game) {
+            return new GameView(
+                    game.id().uuid().toString(),
+                    game.name(),
+                    mapResult(game.result()),
+                    false,
                     game.boardMap(),
                     mapTurn(game));
         }
@@ -131,7 +154,7 @@ public class GameController {
         }
 
         public boolean canPlayCell(int x, int y) {
-            if (isOver) {
+            if (!isPlayable) {
                 return false;
             }
             return cells.get(Cell.at(x, y)) == null;

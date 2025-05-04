@@ -30,7 +30,7 @@ class GameControllerTest {
         fixture.gameRepository().save(game);
 
         ConcurrentModel model = new ConcurrentModel();
-        fixture.gameController().showGame(gameId.uuid().toString(), model);
+        fixture.gameController().showGame(gameId.uuid().toString(), 0, model);
 
         assertThat(model)
                 .extracting("game", InstanceOfAssertFactories.type(GameController.GameView.class))
@@ -42,6 +42,25 @@ class GameControllerTest {
                         EventView.from(new CellFilled(Player.X, Cell.at(0, 1))),
                         EventView.from(new GameCreated(gameId, "Game Name"))
                 );
+    }
+
+    @Test
+    void showGame_skipsSpecifiedNumberOfEventsForGameProjection() {
+        Fixture fixture = Fixture.create();
+        GameId gameId = GameId.random();
+        Game game = Game.create(gameId, "Game Name");
+        game.fillCell(Cell.at(0, 1));
+        game.fillCell(Cell.at(0, 2));
+        fixture.gameRepository().save(game);
+
+        ConcurrentModel model = new ConcurrentModel();
+        fixture.gameController().showGame(gameId.uuid().toString(), 1, model);
+
+        GameController.GameView gameView = (GameController.GameView) model.get("game");
+        assertThat(gameView.currentPlayerClass())
+                .isEqualTo("o-turn");
+        assertThat(gameView.canPlayCell(1, 1))
+                .isFalse();
     }
 
     @Test
@@ -99,7 +118,7 @@ class GameControllerTest {
         void containsGameName() {
             Game game = Game.create(GameId.random(), "Game Name");
 
-            GameController.GameView gameView = GameController.GameView.from(game);
+            GameController.GameView gameView = GameController.GameView.of(game);
 
             assertThat(gameView.name())
                     .isEqualTo("Game Name");
@@ -109,7 +128,7 @@ class GameControllerTest {
         void fillOfEmptyCellIsEmptyString() {
             Game game = Game.create(GameId.random(), "IRRELEVANT GAME NAME");
 
-            GameController.GameView gameView = GameController.GameView.from(game);
+            GameController.GameView gameView = GameController.GameView.of(game);
 
             assertThat(gameView.cellAt(1, 1))
                     .isEqualTo("");
@@ -121,7 +140,7 @@ class GameControllerTest {
             game.fillCell(Cell.at(1, 1));
             game.fillCell(Cell.at(2, 2));
 
-            GameController.GameView gameView = GameController.GameView.from(game);
+            GameController.GameView gameView = GameController.GameView.of(game);
 
             assertThat(gameView.cellAt(1, 1))
                     .isEqualTo("X");
@@ -133,7 +152,7 @@ class GameControllerTest {
         void classOfEmptyCellIsOnlyCell() {
             Game game = Game.create(GameId.random(), "IRRELEVANT GAME NAME");
 
-            GameController.GameView gameView = GameController.GameView.from(game);
+            GameController.GameView gameView = GameController.GameView.of(game);
 
             assertThat(gameView.cssClassFor(0, 0))
                     .isEqualTo("cell");
@@ -145,7 +164,7 @@ class GameControllerTest {
             game.fillCell(Cell.at(1, 1));
             game.fillCell(Cell.at(2, 2));
 
-            GameController.GameView gameView = GameController.GameView.from(game);
+            GameController.GameView gameView = GameController.GameView.of(game);
 
             assertThat(gameView.cssClassFor(1, 1))
                     .isEqualTo("cell player-x");
@@ -159,7 +178,7 @@ class GameControllerTest {
             game.fillCell(Cell.at(1, 1));
             game.fillCell(Cell.at(2, 2));
 
-            GameController.GameView gameView = GameController.GameView.from(game);
+            GameController.GameView gameView = GameController.GameView.of(game);
 
             assertThat(gameView.result())
                     .isEqualTo("In Progress");
@@ -169,7 +188,7 @@ class GameControllerTest {
         void resultOfDrawnGameIsInDrawn() {
             Game drawnGame = GameFactory.createDrawnGame();
 
-            GameController.GameView gameView = GameController.GameView.from(drawnGame);
+            GameController.GameView gameView = GameController.GameView.of(drawnGame);
 
             assertThat(gameView.result())
                     .isEqualTo("It's a draw!");
@@ -179,7 +198,7 @@ class GameControllerTest {
         void resultOfGameWonByXIndicatesThatXWon() {
             Game drawnGame = GameFactory.createGameWonByX();
 
-            GameController.GameView gameView = GameController.GameView.from(drawnGame);
+            GameController.GameView gameView = GameController.GameView.of(drawnGame);
 
             assertThat(gameView.result())
                     .isEqualTo("Player X wins!");
@@ -189,7 +208,7 @@ class GameControllerTest {
         void resultOfGameWonByOIndicatesThatOWon() {
             Game drawnGame = GameFactory.createGameWonByO();
 
-            GameController.GameView gameView = GameController.GameView.from(drawnGame);
+            GameController.GameView gameView = GameController.GameView.of(drawnGame);
 
             assertThat(gameView.result())
                     .isEqualTo("Player O wins!");
@@ -199,7 +218,7 @@ class GameControllerTest {
         void currentTurnClass_whenItsPlayerXsTurn() {
             Game game = Game.create(GameId.random(), "Player X's turn");
 
-            GameController.GameView gameView = GameController.GameView.from(game);
+            GameController.GameView gameView = GameController.GameView.of(game);
 
             assertThat(gameView.currentPlayerClass())
                     .isEqualTo("x-turn");
@@ -210,7 +229,7 @@ class GameControllerTest {
             Game game = Game.create(GameId.random(), "Player X's turn");
             game.fillCell(Cell.at(1, 1));
 
-            GameController.GameView gameView = GameController.GameView.from(game);
+            GameController.GameView gameView = GameController.GameView.of(game);
 
             assertThat(gameView.currentPlayerClass())
                     .isEqualTo("o-turn");
@@ -219,7 +238,7 @@ class GameControllerTest {
         @ParameterizedTest
         @MethodSource("gamesThatAreOver")
         void currentTurnClass_whenGameIsOver_isNoTurn(Game game) {
-            GameController.GameView gameView = GameController.GameView.from(game);
+            GameController.GameView gameView = GameController.GameView.of(game);
 
             assertThat(gameView.currentPlayerClass())
                     .isEqualTo("no-turn");

@@ -1,7 +1,10 @@
+@import gg.jte.support.ForSupport
 @import ninja.ranner.xogame.adapter.in.web.EventView
 @import java.util.List
 @param List<EventView> events
 @param boolean isHtmx
+@param int skippedEvents
+@param String baseUrl
 
 <div id="events-container"
      hx-swap-oob='${isHtmx ? "events-container" : null}'
@@ -22,6 +25,10 @@
             padding: 0.5rem;
             background: #e1ffdb;
             gap: 0.5rem;
+        }
+
+        .event.skipped {
+            opacity: 0.3;
         }
 
         .event pre {
@@ -46,10 +53,13 @@
             font-family: monospace;
         }
     </style>
-    @for(EventView event : events)
-        <div class="event">
-            <span class="event-name">${event.eventName()}</span>
-            @for(EventView.FieldView field : event.fields())
+    @for(var event : ForSupport.of(events))
+        <div class="${event.getIndex() < skippedEvents ? "event skipped" : "event"}"
+             hx-get="${baseUrl}?numberOfEventsToSkip=${event.getIndex()}"
+             hx-target="body"
+        >
+            <span class="event-name">${event.get().eventName()}</span>
+            @for(EventView.FieldView field : event.get().fields())
                 <div>
                     <strong class="key">${field.name()}</strong>:
                     <span class="value">${field.value()}</span>

@@ -4,8 +4,10 @@ import ninja.ranner.xogame.InMemoryStoresTestConfiguration;
 import ninja.ranner.xogame.application.port.ConfigurableGameIdGenerator;
 import ninja.ranner.xogame.application.port.GameRepository;
 import ninja.ranner.xogame.application.port.InMemoryEventStore;
+import ninja.ranner.xogame.domain.Cell;
 import ninja.ranner.xogame.domain.Game;
 import ninja.ranner.xogame.domain.GameId;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -112,5 +114,29 @@ class GameControllerMvcTest {
         assertThat(result)
                 .hasStatus3xxRedirection()
                 .hasRedirectedUrl("/games/" + newGameId.uuid().toString());
+    }
+
+    @Test
+    void getGame_acceptsEventIndexParameter() {
+        GameId gameId = GameId.random();
+        Game game = Game.create(gameId, "IRRELEVANT GAME NAME");
+        game.fillCell(Cell.at(0, 0));
+        game.fillCell(Cell.at(2, 2));
+        gameRepository.save(game);
+
+        MvcTestResult result = mvcTester.get()
+                                        .uri("/games/{gameId}", gameId.uuid().toString())
+                                        .queryParam("numberOfEventsToSkip", "1")
+                                        .exchange();
+
+        assertThat(result)
+                .hasStatusOk()
+                .model().extracting("game", InstanceOfAssertFactories.type(GameController.GameView.class))
+                .extracting(gv -> gv.cellAt(2, 2))
+                .isEqualTo("");
+        assertThat(result)
+                .model()
+                .extracting("gameEvents", InstanceOfAssertFactories.list(EventView.class))
+                .hasSize(3);
     }
 }
