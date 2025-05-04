@@ -122,7 +122,6 @@ section#events {
         gap: 2rem;
         justify-content: stretch;
         align-items: start;
-        /*padding: 2rem;*/
     }
 
     .game-container {
@@ -131,7 +130,7 @@ section#events {
 
     section#events {
         overflow-y: auto;
-        height: 100%;
+        height: calc(100% - 4rem);
         margin-right: 2rem;
     }
 }
