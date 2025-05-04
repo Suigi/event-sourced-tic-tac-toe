@@ -13,6 +13,7 @@ import org.springframework.ui.ConcurrentModel;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,7 +31,7 @@ class GameControllerTest {
         fixture.gameRepository().save(game);
 
         ConcurrentModel model = new ConcurrentModel();
-        fixture.gameController().showGame(gameId.uuid().toString(), 0, model);
+        fixture.gameController().showGame(gameId.uuid().toString(), model);
 
         assertThat(model)
                 .extracting("game", InstanceOfAssertFactories.type(GameController.GameView.class))
@@ -42,25 +43,6 @@ class GameControllerTest {
                         EventView.from(new CellFilled(Player.X, Cell.at(0, 1))),
                         EventView.from(new GameCreated(gameId, "Game Name"))
                 );
-    }
-
-    @Test
-    void showGame_skipsSpecifiedNumberOfEventsForGameProjection() {
-        Fixture fixture = Fixture.create();
-        GameId gameId = GameId.random();
-        Game game = Game.create(gameId, "Game Name");
-        game.fillCell(Cell.at(0, 1));
-        game.fillCell(Cell.at(0, 2));
-        fixture.gameRepository().save(game);
-
-        ConcurrentModel model = new ConcurrentModel();
-        fixture.gameController().showGame(gameId.uuid().toString(), 1, model);
-
-        GameController.GameView gameView = (GameController.GameView) model.get("game");
-        assertThat(gameView.currentPlayerClass())
-                .isEqualTo("o-turn");
-        assertThat(gameView.canPlayCell(1, 1))
-                .isFalse();
     }
 
     @Test
@@ -110,6 +92,100 @@ class GameControllerTest {
                         "CellFilled",
                         "GameCreated"
                 );
+    }
+
+    @Test
+    void showGameHtmx_updatesGameBoard_outOfBand() {
+        Fixture fixture = Fixture.create();
+        GameId gameId = GameId.random();
+        Game game = Game.create(gameId, "Game Name");
+        game.fillCell(Cell.at(0, 0));
+        game.fillCell(Cell.at(1, 1));
+        fixture.gameRepository.save(game);
+
+        Collection<ModelAndView> modelsAndViews = fixture.gameController.showGameHtmx(
+                gameId.uuid().toString(),
+                2);
+
+        assertThat(modelForView(modelsAndViews, "board"))
+                .extracting("game", InstanceOfAssertFactories.type(GameController.GameView.class))
+                .extracting(gameView -> gameView.cellAt(0, 0))
+                .isEqualTo("");
+    }
+
+    @Test
+    void showGameHtmx_enablesGameBoardForCurrentProjections() {
+        Fixture fixture = Fixture.create();
+        GameId gameId = GameId.random();
+        Game game = Game.create(gameId, "Game Name");
+        game.fillCell(Cell.at(0, 0));
+        game.fillCell(Cell.at(1, 1));
+        fixture.gameRepository.save(game);
+
+        Collection<ModelAndView> modelsAndViews = fixture.gameController.showGameHtmx(
+                gameId.uuid().toString(),
+                0);
+
+        Map<String, Object> model = modelForView(modelsAndViews, "board");
+        GameController.GameView gameView = (GameController.GameView) model.get("game");
+        assertThat(gameView.canPlayCell(2, 2))
+                .isTrue();
+    }
+
+    @Test
+    void showGameHtmx_disablesGameBoardForHistoricalProjections() {
+        Fixture fixture = Fixture.create();
+        GameId gameId = GameId.random();
+        Game game = Game.create(gameId, "Game Name");
+        game.fillCell(Cell.at(0, 0));
+        game.fillCell(Cell.at(1, 1));
+        fixture.gameRepository.save(game);
+
+        Collection<ModelAndView> modelsAndViews = fixture.gameController.showGameHtmx(
+                gameId.uuid().toString(),
+                2);
+
+        Map<String, Object> model = modelForView(modelsAndViews, "board");
+        GameController.GameView gameView = (GameController.GameView) model.get("game");
+        assertThat(gameView.canPlayCell(2, 2))
+                .isFalse();
+    }
+
+    @Test
+    void showGameHtmx_updatesGameResult_outOfBand() {
+        Fixture fixture = Fixture.create();
+        GameId gameId = GameId.random();
+        List<Event> events = GameFactory.Events.forDrawnGame(gameId);
+        fixture.eventStore.append(gameId, events);
+
+        Collection<ModelAndView> modelsAndViews = fixture.gameController.showGameHtmx(
+                gameId.uuid().toString(),
+                2);
+
+        assertThat(modelForView(modelsAndViews, "game-result"))
+                .containsEntry("isHtmx", true)
+                .extracting("game", InstanceOfAssertFactories.type(GameController.GameView.class))
+                .extracting(GameController.GameView::result)
+                .isEqualTo("In Progress");
+    }
+
+    @Test
+    void showGameHtmx_updatesGameEvents_outOfBand() {
+        Fixture fixture = Fixture.create();
+        GameId gameId = GameId.random();
+        List<Event> events = GameFactory.Events.forDrawnGame(gameId);
+        fixture.eventStore.append(gameId, events);
+
+        Collection<ModelAndView> modelsAndViews = fixture.gameController.showGameHtmx(
+                gameId.uuid().toString(),
+                3);
+
+        assertThat(modelForView(modelsAndViews, "events-list"))
+                .containsEntry("isHtmx", true)
+                .containsEntry("skippedEvents", 3)
+                .containsEntry("baseUrl", "/games/" + gameId.uuid())
+                .extracting("events", InstanceOfAssertFactories.list(EventView.class))
+                .hasSize(events.size());
     }
 
     @Nested
@@ -270,12 +346,14 @@ class GameControllerTest {
                 .isEqualTo("My New Game");
     }
 
-    private record Fixture(GameRepository gameRepository, GameController gameController) {
+    private record Fixture(InMemoryEventStore eventStore,
+                           GameRepository gameRepository,
+                           GameController gameController) {
         private static Fixture create() {
             InMemoryEventStore eventStore = new InMemoryEventStore();
             GameRepository gameRepository = new GameRepository(eventStore);
             GameController gameController = new GameController(GameService.createForTest(gameRepository), eventStore);
-            return new Fixture(gameRepository, gameController);
+            return new Fixture(eventStore, gameRepository, gameController);
         }
     }
 

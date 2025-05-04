@@ -3,7 +3,6 @@
 @import java.util.List
 @param GameView game
 @param List<EventView> gameEvents
-@param int skippedEvents
 <!DOCTYPE html>
 <html lang="en">
 
@@ -197,7 +196,7 @@
         @template.events-list(
         events = gameEvents,
         isHtmx = false,
-        skippedEvents = skippedEvents,
+        skippedEvents = 0,
         baseUrl = "/games/" + game.gameId())
     </section>
 </div>

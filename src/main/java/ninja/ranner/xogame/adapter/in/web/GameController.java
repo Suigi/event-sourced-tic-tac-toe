@@ -28,28 +28,46 @@ public class GameController {
     @GetMapping("/{gameId}")
     public String showGame(
             @PathVariable("gameId") String gameIdString,
-            @RequestParam(value = "numberOfEventsToSkip", defaultValue = "0") int numberOfEventsToSkip,
             Model model) {
-        GameId gameId = GameId.of(UUID.fromString(gameIdString));
-        List<Event> events = eventStore.findAllForId(gameId)
-                                       .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        GameView gameView;
-        if (numberOfEventsToSkip > 0) {
-            Game game = Game.reconstitute(events.subList(0, events.size() - numberOfEventsToSkip));
-            gameView = GameView.ofHistorical(game);
-        } else {
-            Game game = findOrThrow(gameIdString);
-            gameView = GameView.of(game);
-        }
-        model.addAttribute("game", gameView);
+        Game game = findOrThrow(gameIdString);
+        List<Event> events = eventStore.findAllForId(game.id()).orElseThrow();
+        model.addAttribute("game", GameView.of(game));
         model.addAttribute("gameEvents",
                 events.stream()
                       .map(EventView::from)
                       .toList()
                       .reversed()
         );
-        model.addAttribute("skippedEvents", numberOfEventsToSkip);
         return "game";
+    }
+
+    @HxRequest
+    @GetMapping("/{gameId}")
+    public Collection<ModelAndView> showGameHtmx(
+            @PathVariable("gameId") String gameIdString,
+            @RequestParam(value = "numberOfEventsToSkip", defaultValue = "0") int numberOfEventsToSkip) {
+        List<Event> events = eventStore
+                .findAllForId(GameId.of(UUID.fromString(gameIdString)))
+                .orElseThrow();
+        Game game = Game.reconstitute(events.subList(0, events.size() - numberOfEventsToSkip));
+        GameView gameView = numberOfEventsToSkip > 0
+                ? GameView.ofHistorical(game)
+                : GameView.of(game);
+        return List.of(
+                new ModelAndView("board", Map.of(
+                        "game", gameView
+                )),
+                new ModelAndView("game-result", Map.of(
+                        "isHtmx", true,
+                        "game", gameView
+                )),
+                new ModelAndView("events-list", Map.of(
+                        "isHtmx", true,
+                        "skippedEvents", numberOfEventsToSkip,
+                        "baseUrl", "/games/" + gameIdString,
+                        "events", events.stream().map(EventView::from).toList()
+                ))
+        );
     }
 
     @HxRequest

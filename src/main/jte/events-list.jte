@@ -56,7 +56,8 @@
     @for(var event : ForSupport.of(events))
         <div class="${event.getIndex() < skippedEvents ? "event skipped" : "event"}"
              hx-get="${baseUrl}?numberOfEventsToSkip=${event.getIndex()}"
-             hx-target="body"
+             hx-target="#board"
+             hx-swap="outerHTML"
         >
             <span class="event-name">${event.get().eventName()}</span>
             @for(EventView.FieldView field : event.get().fields())
