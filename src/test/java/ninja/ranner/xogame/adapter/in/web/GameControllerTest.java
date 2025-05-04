@@ -185,7 +185,21 @@ class GameControllerTest {
                 .containsEntry("skippedEvents", 3)
                 .containsEntry("baseUrl", "/games/" + gameId.uuid())
                 .extracting("events", InstanceOfAssertFactories.list(EventView.class))
-                .hasSize(events.size());
+                .hasSize(events.size())
+                .extracting(EventView::eventName)
+                .containsExactly(
+                        "GameDrawn",
+                        "CellFilled",
+                        "CellFilled",
+                        "CellFilled",
+                        "CellFilled",
+                        "CellFilled",
+                        "CellFilled",
+                        "CellFilled",
+                        "CellFilled",
+                        "CellFilled",
+                        "GameCreated"
+                );
     }
 
     @Nested

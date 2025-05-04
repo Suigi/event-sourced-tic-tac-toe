@@ -65,7 +65,10 @@ public class GameController {
                         "isHtmx", true,
                         "skippedEvents", numberOfEventsToSkip,
                         "baseUrl", "/games/" + gameIdString,
-                        "events", events.stream().map(EventView::from).toList()
+                        "events", events.stream()
+                                        .map(EventView::from)
+                                        .toList()
+                                        .reversed()
                 ))
         );
     }
