@@ -8,7 +8,7 @@ import ninja.ranner.xogame.application.port.InMemoryEventStore;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
-@TestConfiguration
+@TestConfiguration(proxyBeanMethods = false)
 public class InMemoryStoresTestConfiguration {
 
     @Bean
