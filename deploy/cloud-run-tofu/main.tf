@@ -184,7 +184,7 @@ data "google_iam_workload_identity_pool" "github" {
 }
 
 locals {
-  oidc_principal = "principalSet://iam.googleapis.com/${data.google_iam_workload_identity_pool.github.name}/attribute.repository/Suigi/tic-tac-toe"
+  oidc_principal = "principalSet://iam.googleapis.com/${data.google_iam_workload_identity_pool.github.name}/attribute.repository/Suigi/event-sourced-tic-tac-toe"
 }
 
 output "api_url" {
