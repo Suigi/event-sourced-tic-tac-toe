@@ -4,9 +4,16 @@ image-tag := `date +%s`
 test:
   ./mvnw test
 
+native-image:
+  ./mvnw spring-boot:build-image \
+    -Pnative \
+    -Dimage.platform=linux/arm64 \
+    -Dimage.name=xogame:latest \
+    -Dimage.publish=false
+
 gcloud-build-image:
   ./mvnw spring-boot:build-image \
-    -Dspring.profiles.active=default \
+    -Pnative \
     -Dimage.platform=linux/amd64 \
     -Dimage.name={{gcloud-registry}}:{{image-tag}} \
     -Dimage.publish=false
