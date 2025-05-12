@@ -1,5 +1,6 @@
 package ninja.ranner.xogame.spring;
 
+import com.zaxxer.hikari.util.ConcurrentBag;
 import ninja.ranner.xogame.domain.CellFilled;
 import ninja.ranner.xogame.domain.GameCreated;
 import ninja.ranner.xogame.domain.GameDrawn;
@@ -9,6 +10,7 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
 
+import java.sql.Statement;
 import java.util.List;
 
 @Configuration(proxyBeanMethods = false)
@@ -33,5 +35,13 @@ public class RuntimeHints implements RuntimeHintsRegistrar {
                     MemberCategory.DECLARED_FIELDS);
         });
 
+        hints.reflection().registerType(
+                Statement[].class,
+                MemberCategory.UNSAFE_ALLOCATED
+        );
+        hints.reflection().registerType(
+                ConcurrentBag.IConcurrentBagEntry[].class,
+                MemberCategory.UNSAFE_ALLOCATED
+        );
     }
 }

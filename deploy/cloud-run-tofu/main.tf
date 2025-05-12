@@ -67,49 +67,49 @@ resource "google_cloud_run_v2_service" "default" {
       }
       liveness_probe {
         http_get {
-          path = "/"
+          path = "/actuator/health"
         }
       }
 
 
-      #       env {
-      #         name = "POSTGRES_HOST"
-      #         value_source {
-      #           secret_key_ref {
-      #             secret  = "supabase-hostname"
-      #             version = 1
-      #           }
-      #         }
-      #       }
-      #       env {
-      #         name = "POSTGRES_USER"
-      #         value_source {
-      #           secret_key_ref {
-      #             secret  = "supabase-username"
-      #             version = 1
-      #           }
-      #         }
-      #       }
-      #       env {
-      #         name = "POSTGRES_PASSWORD"
-      #         value_source {
-      #           secret_key_ref {
-      #             secret  = "supabase-password"
-      #             version = 1
-      #           }
-      #         }
-      #       }
-      #       env {
-      #         name  = "POSTGRES_PORT"
-      #         value = "5432"
-      #       }
-      #       env {
-      #         name  = "POSTGRES_DB"
-      #         value = "postgres"
-      #       }
+      env {
+        name = "POSTGRES_HOST"
+        value_source {
+          secret_key_ref {
+            secret  = "supabase-hostname"
+            version = 1
+          }
+        }
+      }
+      env {
+        name = "POSTGRES_USERNAME"
+        value_source {
+          secret_key_ref {
+            secret  = "supabase-username"
+            version = 1
+          }
+        }
+      }
+      env {
+        name = "POSTGRES_PASSWORD"
+        value_source {
+          secret_key_ref {
+            secret  = "supabase-password"
+            version = 1
+          }
+        }
+      }
+      env {
+        name  = "POSTGRES_PORT"
+        value = "5432"
+      }
+      env {
+        name  = "POSTGRES_DB"
+        value = "postgres"
+      }
       env {
         name  = "SPRING.PROFILES.ACTIVE"
-        value = "nodb,jte-precompile"
+        value = "supabase"
       }
       env {
         name  = "JAVA_OPTS"
