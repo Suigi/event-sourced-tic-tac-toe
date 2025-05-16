@@ -16,11 +16,9 @@ public class GameEventNameMapper implements JdbcEventStore.EventNameMapper {
             .entrySet()
             .stream()
             .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
-
-    @Override
-    public String aggregateNameFor(Identifier identifier) {
-        return "";
-    }
+    private final Map<Class<? extends Identifier>, String> identifierToName = Map.of(
+            GameId.class, "Game"
+    );
 
     @Override
     public String eventNameFor(Class<? extends Event> eventClass) {
@@ -38,6 +36,11 @@ public class GameEventNameMapper implements JdbcEventStore.EventNameMapper {
             throw new UnsupportedOperationException("Unknown Event Type '" + eventName + "'");
         }
         return eventType;
+    }
+
+    @Override
+    public String aggregateNameFor(Identifier identifier) {
+        return identifierToName.get(identifier.getClass());
     }
 
     @Override

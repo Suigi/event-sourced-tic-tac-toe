@@ -22,6 +22,11 @@ class GameEventNameMapperTest {
             String eventName
     ) {}
 
+    public record AggregateCase(
+            Identifier identifier,
+            String aggregateName
+    ) {}
+
     public static Stream<Arguments> allEvents() {
         GameId gameId = GameId.of(UUID.fromString("0196d97f-024c-700f-b5d4-cda99209868b"));
         return Stream.of(
@@ -42,6 +47,16 @@ class GameEventNameMapperTest {
                         "GameWon"
                 ))
         );
+    }
+
+    public static Stream<Arguments> allIdentifiers() {
+        return Stream.of(
+                argumentFrom(new AggregateCase(GameId.random(), "Game"))
+        );
+    }
+
+    private static Arguments argumentFrom(AggregateCase aggregateCase) {
+        return Arguments.of(Named.of(aggregateCase.aggregateName(), aggregateCase));
     }
 
     private static Arguments argumentFrom(EventCase payload) {
@@ -98,6 +113,15 @@ class GameEventNameMapperTest {
         assertThatExceptionOfType(UnsupportedOperationException.class)
                 .isThrownBy(() -> mapper.eventTypeFor("UnknownEvent"))
                 .withMessageContaining("Unknown Event Type 'UnknownEvent'");
+    }
+
+    @ParameterizedTest
+    @MethodSource("allIdentifiers")
+    void mapsIdentifierTypesToAggregateName(AggregateCase aggregateCase) {
+        GameEventNameMapper mapper = new GameEventNameMapper();
+
+        assertThat(mapper.aggregateNameFor(aggregateCase.identifier()))
+                .isEqualTo(aggregateCase.aggregateName());
     }
 
     private boolean isConcreteImplementation(Class<? extends Event> x) {
