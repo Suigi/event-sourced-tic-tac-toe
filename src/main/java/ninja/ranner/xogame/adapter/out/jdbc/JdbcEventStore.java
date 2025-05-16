@@ -34,14 +34,11 @@ public class JdbcEventStore implements EventStore {
             return eventNameFor(event.getClass());
         }
 
-        Class<?> identifierTypeFor(String aggregateName);
-
         Class<? extends Event> eventTypeFor(String eventName);
     }
 
     public interface EventSerializer {
         String serialize(Event event);
-
         Event deserialize(Class<? extends Event> eventType, String json);
     }
 

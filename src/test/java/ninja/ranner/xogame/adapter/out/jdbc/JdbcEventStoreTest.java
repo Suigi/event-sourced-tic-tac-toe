@@ -183,14 +183,6 @@ class JdbcEventStoreTest {
         }
 
         @Override
-        public Class<?> identifierTypeFor(String aggregateName) {
-            if (aggregateName.equals("Testable")) {
-                return TestableId.class;
-            }
-            throw new IllegalArgumentException("Unknown aggregate name " + aggregateName);
-        }
-
-        @Override
         public Class<? extends Event> eventTypeFor(String eventName) {
             return switch (eventName) {
                 case "TestableEvent" -> TestableEvent.class;

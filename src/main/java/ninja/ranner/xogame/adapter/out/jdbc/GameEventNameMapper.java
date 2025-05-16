@@ -47,8 +47,4 @@ public class GameEventNameMapper implements JdbcEventStore.EventNameMapper {
         return aggregateName;
     }
 
-    @Override
-    public Class<?> identifierTypeFor(String aggregateName) {
-        return null;
-    }
 }
