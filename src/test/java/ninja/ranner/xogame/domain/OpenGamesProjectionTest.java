@@ -51,4 +51,5 @@ class OpenGamesProjectionTest {
                 .extracting(OpenGamesProjection.GameSummary::name)
                 .containsExactly("Open Game");
     }
+
 }

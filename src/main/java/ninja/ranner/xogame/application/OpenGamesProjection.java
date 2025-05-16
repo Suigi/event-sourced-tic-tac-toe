@@ -40,6 +40,6 @@ public class OpenGamesProjection {
     }
 
     private void removeById(GameId gameId) {
-        games.removeIf(summary -> summary.id == gameId);
+        games.removeIf(summary -> summary.id.equals(gameId));
     }
 }
