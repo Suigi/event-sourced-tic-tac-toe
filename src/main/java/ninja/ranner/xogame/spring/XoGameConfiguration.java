@@ -9,16 +9,14 @@ import ninja.ranner.xogame.application.port.GameRepository;
 import ninja.ranner.xogame.domain.GameId;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 @Configuration(proxyBeanMethods = false)
 public class XoGameConfiguration {
 
     @Bean
-    EventStore eventStore(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    EventStore eventStore(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         return new JdbcEventStore(
-                jdbcTemplate,
                 namedParameterJdbcTemplate,
                 new GameEventNameMapper()
         );

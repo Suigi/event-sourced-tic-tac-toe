@@ -120,7 +120,7 @@ class JdbcEventStoreTest {
     }
 
     private JdbcEventStore createEventStore() {
-        return new JdbcEventStore(jdbcTemplate,
+        return new JdbcEventStore(
                 namedParameterJdbcTemplate,
                 new TestableEventNameMapper());
     }

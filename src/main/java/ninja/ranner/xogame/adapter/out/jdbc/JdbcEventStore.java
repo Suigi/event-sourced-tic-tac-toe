@@ -4,7 +4,6 @@ import jakarta.annotation.Nonnull;
 import ninja.ranner.xogame.application.port.EventStore;
 import ninja.ranner.xogame.domain.Event;
 import ninja.ranner.xogame.domain.Identifier;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.AbstractSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -42,14 +41,11 @@ public class JdbcEventStore implements EventStore {
         Event deserialize(Class<? extends Event> eventType, String json);
     }
 
-    private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public JdbcEventStore(JdbcTemplate jdbcTemplate,
-                          NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+    public JdbcEventStore(NamedParameterJdbcTemplate namedParameterJdbcTemplate,
                           EventNameMapper eventNameMapper) {
         this.eventNameMapper = eventNameMapper;
-        this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
