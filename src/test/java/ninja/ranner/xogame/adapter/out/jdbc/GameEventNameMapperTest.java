@@ -82,6 +82,24 @@ class GameEventNameMapperTest {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource("allEvents")
+    void mapsEventNameToEventType(EventCase eventCase) {
+        GameEventNameMapper mapper = new GameEventNameMapper();
+
+        assertThat(mapper.eventTypeFor(eventCase.eventName()))
+                .isEqualTo(eventCase.event().getClass());
+    }
+
+    @Test
+    void mappingUnknownEventNameToEventTypeThrows() {
+        GameEventNameMapper mapper = new GameEventNameMapper();
+
+        assertThatExceptionOfType(UnsupportedOperationException.class)
+                .isThrownBy(() -> mapper.eventTypeFor("UnknownEvent"))
+                .withMessageContaining("Unknown Event Type 'UnknownEvent'");
+    }
+
     private boolean isConcreteImplementation(Class<? extends Event> x) {
         return !x.isInterface() && !Modifier.isAbstract(x.getModifiers()) && !x.isAnonymousClass();
     }

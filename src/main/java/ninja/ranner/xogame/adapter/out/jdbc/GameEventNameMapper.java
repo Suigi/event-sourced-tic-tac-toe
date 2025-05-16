@@ -3,6 +3,7 @@ package ninja.ranner.xogame.adapter.out.jdbc;
 import ninja.ranner.xogame.domain.*;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GameEventNameMapper implements JdbcEventStore.EventNameMapper {
     private final Map<Class<? extends Event>, String> eventToName = Map.of(
@@ -11,6 +12,10 @@ public class GameEventNameMapper implements JdbcEventStore.EventNameMapper {
             GameDrawn.class, "GameDrawn",
             GameWon.class, "GameWon"
     );
+    private final Map<String, Class<? extends Event>> eventNameToType = eventToName
+            .entrySet()
+            .stream()
+            .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
 
     @Override
     public String aggregateNameFor(Identifier identifier) {
@@ -27,12 +32,16 @@ public class GameEventNameMapper implements JdbcEventStore.EventNameMapper {
     }
 
     @Override
-    public Class<?> identifierTypeFor(String aggregateName) {
-        return null;
+    public Class<?> eventTypeFor(String eventName) {
+        Class<? extends Event> eventType = eventNameToType.get(eventName);
+        if (eventType == null) {
+            throw new UnsupportedOperationException("Unknown Event Type '" + eventName + "'");
+        }
+        return eventType;
     }
 
     @Override
-    public Class<?> eventTypeFor(String eventName) {
+    public Class<?> identifierTypeFor(String aggregateName) {
         return null;
     }
 }
