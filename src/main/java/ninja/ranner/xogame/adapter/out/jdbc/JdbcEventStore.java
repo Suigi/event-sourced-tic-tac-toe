@@ -25,7 +25,11 @@ public class JdbcEventStore implements EventStore {
     public interface EventNameMapper {
         String aggregateNameFor(Identifier identifier);
 
-        String eventNameFor(Event event);
+        String eventNameFor(Class<? extends Event> eventClass);
+
+        default String eventNameFor(Event event) {
+            return eventNameFor(event.getClass());
+        }
 
         Class<?> identifierTypeFor(String aggregateName);
 
@@ -71,24 +75,37 @@ public class JdbcEventStore implements EventStore {
                                 :event_type,
                                 :event_payload::json)
                         """,
-                EventParameterSource.of(id, events, maxIndex));
+                EventParameterSource.of(eventNameMapper, id, events, maxIndex));
     }
 
     @Override
-    public Optional<List<Event>> findAllForId(Identifier gameId) {
+    public Optional<List<Event>> findAllForId(Identifier identifier) {
         List<Event> events = namedParameterJdbcTemplate.query("""
                         SELECT *
                         FROM events
+                        WHERE aggregate_type = :aggregate_type
+                          AND aggregate_id = :aggregate_id
                         ORDER BY events.event_index
                         """,
-                Map.of(),
+                Map.of(
+                        "aggregate_type", eventNameMapper.aggregateNameFor(identifier),
+                        "aggregate_id", identifier.uuid().toString()
+                ),
                 this::mapRow);
         return Optional.of(events);
     }
 
     @Override
     public List<Event> findAllForTypes(List<Class<? extends Event>> gameCreatedClass) {
-        throw new UnsupportedOperationException("findAllForTypes is not implemented.");
+        return namedParameterJdbcTemplate.query("""
+                        SELECT *
+                        FROM events
+                        WHERE event_type IN (:ids)
+                        """,
+                Map.of("ids", gameCreatedClass.stream()
+                                              .map(eventNameMapper::eventNameFor)
+                                              .toList()),
+                this::mapRow);
     }
 
     Event mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -114,17 +131,19 @@ public class JdbcEventStore implements EventStore {
 
         private final int eventIndex;
 
-        public static EventParameterSource[] of(Identifier id, List<Event> events, int startIndex) {
+        public static EventParameterSource[] of(EventNameMapper eventNameMapper, Identifier id, List<Event> events, int startIndex) {
             AtomicInteger index = new AtomicInteger(startIndex);
             return events.stream()
-                         .map(e -> new EventParameterSource(id, e, index.incrementAndGet()))
+                         .map(e -> new EventParameterSource(eventNameMapper, id, e, index.incrementAndGet()))
                          .toArray(EventParameterSource[]::new);
         }
 
+        private final EventNameMapper eventNameMapper;
         private final Identifier identifier;
         private final Event event;
 
-        private EventParameterSource(Identifier identifier, Event event, int eventIndex) {
+        private EventParameterSource(EventNameMapper eventNameMapper, Identifier identifier, Event event, int eventIndex) {
+            this.eventNameMapper = eventNameMapper;
             this.identifier = identifier;
             this.event = event;
             this.eventIndex = eventIndex;
@@ -139,10 +158,10 @@ public class JdbcEventStore implements EventStore {
         public Object getValue(@Nonnull String paramName) throws IllegalArgumentException {
             JsonMapper jsonMapper = JsonMapper.builder().build();
             return switch (paramName) {
-                case "aggregate_type" -> "Testable";
+                case "aggregate_type" -> eventNameMapper.aggregateNameFor(identifier);
                 case "aggregate_id" -> identifier.uuid().toString();
                 case "event_index" -> eventIndex;
-                case "event_type" -> event.getClass().getSimpleName();
+                case "event_type" -> eventNameMapper.eventNameFor(event);
                 case "event_payload" -> {
                     try {
                         yield jsonMapper.writeValueAsString(event);

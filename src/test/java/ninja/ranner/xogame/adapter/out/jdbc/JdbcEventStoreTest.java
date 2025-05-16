@@ -126,15 +126,39 @@ class JdbcEventStoreTest {
     }
 
     @Test
-    void storedEventCanBeRetrieved() {
+    void storedEventCanBeRetrievedByAggregate() {
+        JdbcEventStore eventStore = createEventStore();
+        GameId firstGameId = GameId.random();
+        GameId secondGameId = GameId.random();
+
+        eventStore.append(firstGameId, List.of(
+                new GameCreated(firstGameId, "First Game Name")
+        ));
+        eventStore.append(new TestableId(firstGameId.uuid()), List.of(
+                new TestableEvent("Unrelated Event")
+        ));
+        eventStore.append(secondGameId, List.of(
+                new GameCreated(secondGameId, "Second Game Name")
+        ));
+
+        List<Event> foundEvents = eventStore.findAllForId(firstGameId).orElseThrow();
+        assertThat(foundEvents)
+                .containsExactly(
+                        new GameCreated(firstGameId, "First Game Name")
+                );
+    }
+
+    @Test
+    void storedEventCanBeRetrievedByType() {
         JdbcEventStore eventStore = createEventStore();
         GameId gameId = GameId.random();
 
         eventStore.append(gameId, List.of(
-                new GameCreated(gameId, "New Game Name")
+                new GameCreated(gameId, "New Game Name"),
+                new TestableEvent("My String")
         ));
 
-        List<Event> foundEvents = eventStore.findAllForId(gameId).orElseThrow();
+        List<Event> foundEvents = eventStore.findAllForTypes(List.of(GameCreated.class));
         assertThat(foundEvents)
                 .containsExactly(
                         new GameCreated(gameId, "New Game Name")
@@ -154,8 +178,8 @@ class JdbcEventStoreTest {
         }
 
         @Override
-        public String eventNameFor(Event event) {
-            return event.getClass().getSimpleName();
+        public String eventNameFor(Class<? extends Event> eventClass) {
+            return eventClass.getSimpleName();
         }
 
         @Override
