@@ -43,5 +43,8 @@ public class RuntimeHints implements RuntimeHintsRegistrar {
                 ConcurrentBag.IConcurrentBagEntry[].class,
                 MemberCategory.UNSAFE_ALLOCATED
         );
+
+        hints.resources().registerResourceBundle("com.sun.rowset.RowSetResourceBundle");
+
     }
 }
