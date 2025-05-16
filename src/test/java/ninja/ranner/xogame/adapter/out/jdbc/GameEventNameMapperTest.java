@@ -84,17 +84,19 @@ class GameEventNameMapperTest {
     @Test
     void allEventTypesAreMappedToNames() {
         GameEventNameMapper mapper = new GameEventNameMapper();
-        Reflections reflections = new Reflections("ninja.ranner.xogame.domain");
-        List<Class<? extends Event>> eventTypes = reflections
-                .getSubTypesOf(Event.class).stream()
-                .filter(this::isConcreteImplementation)
-                .toList();
 
-        for (Class<? extends Event> eventType : eventTypes) {
+        for (Class<? extends Event> eventType : implementationsOf(Event.class)) {
             assertThatNoException()
                     .as("Event type " + eventType + " should be mapped")
                     .isThrownBy(() -> mapper.eventNameFor(eventType));
         }
+    }
+
+    private <T> List<Class<? extends T>> implementationsOf(Class<T> baseType) {
+        return new Reflections("ninja.ranner.xogame.domain")
+                .getSubTypesOf(baseType).stream()
+                .filter(this::isConcreteImplementation)
+                .toList();
     }
 
     @ParameterizedTest
@@ -124,7 +126,27 @@ class GameEventNameMapperTest {
                 .isEqualTo(aggregateCase.aggregateName());
     }
 
-    private boolean isConcreteImplementation(Class<? extends Event> x) {
+    @Test
+    void allIdentifierTypesCanBeMappedToAggregateNames() {
+        GameEventNameMapper mapper = new GameEventNameMapper();
+
+        for (Class<? extends Identifier> identifierType : implementationsOf(Identifier.class)) {
+            assertThatNoException()
+                    .as("Identifier type " + identifierType + " should be mapped")
+                    .isThrownBy(() -> mapper.aggregateNameFor(identifierType));
+        }
+    }
+
+    @Test
+    void mappingUnknownIdentifierToAggregateNameThrows() {
+        GameEventNameMapper mapper = new GameEventNameMapper();
+
+        assertThatExceptionOfType(UnsupportedOperationException.class)
+                .isThrownBy(() -> mapper.aggregateNameFor(() -> null))
+                .withMessageContaining("class ninja.ranner.xogame.adapter.out.jdbc.GameEventNameMapperTest$$Lambda");
+    }
+
+    private boolean isConcreteImplementation(Class<?> x) {
         return !x.isInterface() && !Modifier.isAbstract(x.getModifiers()) && !x.isAnonymousClass();
     }
 }

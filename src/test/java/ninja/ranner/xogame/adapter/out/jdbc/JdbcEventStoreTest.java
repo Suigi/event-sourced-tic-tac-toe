@@ -167,14 +167,14 @@ class JdbcEventStoreTest {
 
     private static class TestableEventNameMapper implements JdbcEventStore.EventNameMapper {
         @Override
-        public String aggregateNameFor(Identifier identifier) {
-            if (identifier instanceof TestableId) {
+        public String aggregateNameFor(Class<? extends Identifier> identifierType) {
+            if (identifierType.equals(TestableId.class)) {
                 return "Testable";
             }
-            if (identifier instanceof GameId) {
+            if (identifierType.equals(GameId.class)) {
                 return "Game";
             }
-            throw new IllegalArgumentException("Unknown identifier type " + identifier);
+            throw new IllegalArgumentException("Unknown identifierType type " + identifierType);
         }
 
         @Override

@@ -23,7 +23,11 @@ public class JdbcEventStore implements EventStore {
     private final EventNameMapper eventNameMapper;
 
     public interface EventNameMapper {
-        String aggregateNameFor(Identifier identifier);
+        String aggregateNameFor(Class<? extends Identifier> identifierType);
+
+        default String aggregateNameFor(Identifier identifier) {
+            return aggregateNameFor(identifier.getClass());
+        }
 
         String eventNameFor(Class<? extends Event> eventClass);
 
