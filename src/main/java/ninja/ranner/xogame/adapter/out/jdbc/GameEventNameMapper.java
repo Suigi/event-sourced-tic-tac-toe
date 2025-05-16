@@ -30,7 +30,7 @@ public class GameEventNameMapper implements JdbcEventStore.EventNameMapper {
     }
 
     @Override
-    public Class<?> eventTypeFor(String eventName) {
+    public Class<? extends Event> eventTypeFor(String eventName) {
         Class<? extends Event> eventType = eventNameToType.get(eventName);
         if (eventType == null) {
             throw new UnsupportedOperationException("Unknown Event Type '" + eventName + "'");

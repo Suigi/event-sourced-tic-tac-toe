@@ -1,7 +1,5 @@
 package ninja.ranner.xogame.adapter.out.jdbc;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import jakarta.annotation.Nonnull;
 import ninja.ranner.xogame.application.port.EventStore;
 import ninja.ranner.xogame.domain.Event;
@@ -21,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class JdbcEventStore implements EventStore {
 
     private final EventNameMapper eventNameMapper;
+    private final JsonEventSerializer eventSerializer = new JsonEventSerializer();
 
     public interface EventNameMapper {
         String aggregateNameFor(Class<? extends Identifier> identifierType);
@@ -37,12 +36,17 @@ public class JdbcEventStore implements EventStore {
 
         Class<?> identifierTypeFor(String aggregateName);
 
-        Class<?> eventTypeFor(String eventName);
+        Class<? extends Event> eventTypeFor(String eventName);
+    }
+
+    public interface EventSerializer {
+        String serialize(Event event);
+
+        Event deserialize(Class<? extends Event> eventType, String json);
     }
 
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
 
     public JdbcEventStore(JdbcTemplate jdbcTemplate,
                           NamedParameterJdbcTemplate namedParameterJdbcTemplate,
@@ -79,7 +83,7 @@ public class JdbcEventStore implements EventStore {
                                 :event_type,
                                 :event_payload::json)
                         """,
-                EventParameterSource.of(eventNameMapper, id, events, maxIndex));
+                EventParameterSource.of(eventNameMapper, eventSerializer, id, events, maxIndex));
     }
 
     @Override
@@ -115,12 +119,7 @@ public class JdbcEventStore implements EventStore {
     Event mapRow(ResultSet rs, int rowNum) throws SQLException {
         String eventType = rs.getString("event_type");
         String eventJson = rs.getString("event_payload");
-        JsonMapper jsonMapper = JsonMapper.builder().build();
-        try {
-            return (Event) jsonMapper.readValue(eventJson, eventNameMapper.eventTypeFor(eventType));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return eventSerializer.deserialize(eventNameMapper.eventTypeFor(eventType), eventJson);
     }
 
     public static class EventParameterSource extends AbstractSqlParameterSource {
@@ -135,19 +134,29 @@ public class JdbcEventStore implements EventStore {
 
         private final int eventIndex;
 
-        public static EventParameterSource[] of(EventNameMapper eventNameMapper, Identifier id, List<Event> events, int startIndex) {
+        public static EventParameterSource[] of(EventNameMapper eventNameMapper,
+                                                EventSerializer eventSerializer,
+                                                Identifier id,
+                                                List<Event> events,
+                                                int startIndex) {
             AtomicInteger index = new AtomicInteger(startIndex);
             return events.stream()
-                         .map(e -> new EventParameterSource(eventNameMapper, id, e, index.incrementAndGet()))
+                         .map(e -> new EventParameterSource(eventNameMapper, eventSerializer, id, e, index.incrementAndGet()))
                          .toArray(EventParameterSource[]::new);
         }
 
         private final EventNameMapper eventNameMapper;
+        private final EventSerializer eventSerializer;
         private final Identifier identifier;
         private final Event event;
 
-        private EventParameterSource(EventNameMapper eventNameMapper, Identifier identifier, Event event, int eventIndex) {
+        private EventParameterSource(EventNameMapper eventNameMapper,
+                                     EventSerializer eventSerializer,
+                                     Identifier identifier,
+                                     Event event,
+                                     int eventIndex) {
             this.eventNameMapper = eventNameMapper;
+            this.eventSerializer = eventSerializer;
             this.identifier = identifier;
             this.event = event;
             this.eventIndex = eventIndex;
@@ -160,22 +169,16 @@ public class JdbcEventStore implements EventStore {
 
         @Override
         public Object getValue(@Nonnull String paramName) throws IllegalArgumentException {
-            JsonMapper jsonMapper = JsonMapper.builder().build();
             return switch (paramName) {
                 case "aggregate_type" -> eventNameMapper.aggregateNameFor(identifier);
                 case "aggregate_id" -> identifier.uuid().toString();
                 case "event_index" -> eventIndex;
                 case "event_type" -> eventNameMapper.eventNameFor(event);
-                case "event_payload" -> {
-                    try {
-                        yield jsonMapper.writeValueAsString(event);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+                case "event_payload" -> eventSerializer.serialize(event);
                 default -> null;
             };
         }
+
     }
 
 

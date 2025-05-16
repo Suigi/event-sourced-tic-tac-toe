@@ -191,7 +191,7 @@ class JdbcEventStoreTest {
         }
 
         @Override
-        public Class<?> eventTypeFor(String eventName) {
+        public Class<? extends Event> eventTypeFor(String eventName) {
             return switch (eventName) {
                 case "TestableEvent" -> TestableEvent.class;
                 case "AnotherTestableEvent" -> AnotherTestableEvent.class;
