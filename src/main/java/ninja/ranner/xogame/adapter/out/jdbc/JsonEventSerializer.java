@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import ninja.ranner.xogame.domain.Event;
 
-class JsonEventSerializer implements JdbcEventStore.EventSerializer {
+public class JsonEventSerializer implements JdbcEventStore.EventSerializer {
 
     private final JsonMapper jsonMapper = JsonMapper.builder().build();
 
